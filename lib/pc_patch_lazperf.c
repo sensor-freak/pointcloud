@@ -70,10 +70,22 @@ pc_patch_lazperf_from_uncompressed(const PCPATCH_UNCOMPRESSED *pa)
 PCPOINTLIST *
 pc_pointlist_from_lazperf(const PCPATCH_LAZPERF *palaz)
 {
-	PCPATCH_UNCOMPRESSED *pu = NULL;
-	pu = pc_patch_uncompressed_from_lazperf(palaz);
-	PCPOINTLIST *pl = pc_pointlist_from_uncompressed(pu);
-	pc_patch_free((PCPATCH *)pu);
+	PCPATCH_UNCOMPRESSED *pu = pc_patch_uncompressed_from_lazperf(palaz);
+	PCPOINTLIST *pl = pc_pointlist_make(palaz->npoints);
+
+	// each point of the pointlist owns its data. Then, it will be deleted
+	// during the pc_point_free call.
+	int i;
+	int point_size = palaz->schema->size;
+	for( i=0; i<palaz->npoints; i++ )
+	{
+		PCPOINT *pt = pc_point_make(palaz->schema);
+		memcpy(pt->data, pu->data + i*point_size, point_size);
+		pc_pointlist_add_point(pl, pt);
+	}
+
+	pc_patch_free( (PCPATCH*) pu );
+
 	return pl;
 }
 
