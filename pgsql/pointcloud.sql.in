@@ -301,6 +301,15 @@ CREATE OR REPLACE FUNCTION PC_PointN(p pcpatch, n int4)
     RETURNS pcpoint AS 'MODULE_PATHNAME', 'pcpatch_pointn'
     LANGUAGE 'c' IMMUTABLE STRICT;
 
+CREATE OR REPLACE FUNCTION PC_Interpolate(p pcpatch, attr text, v float8, sorted boolean default false) 
+  RETURNS pcpoint AS 'MODULE_PATHNAME', 'pcpoint_interp'
+    LANGUAGE 'c' IMMUTABLE STRICT;
+
+CREATE OR REPLACE FUNCTION PC_Interpolate(p1 pcpatch, p2 pcpatch, attr1 text, attr2 text default NULL,
+    sorted1 boolean default false, sorted2 boolean default false)
+        RETURNS pcpatch AS 'MODULE_PATHNAME', 'pcpatch_interp'
+    LANGUAGE 'c' IMMUTABLE;
+
 -------------------------------------------------------------------
 --  POINTCLOUD_COLUMNS
 -------------------------------------------------------------------
