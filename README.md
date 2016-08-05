@@ -453,6 +453,10 @@ Now that you have created two tables, you'll see entries for them in the `pointc
 
 > Returns the n-th point of the patch with 1-based indexing. Negative n counts point from the end. 
 
+**PC_Range(p pcpatch, start int4, n int4)** returns **pcpatch**
+
+> Returns a patch containing *n* points. These points are selected from the *start*-th point of the patch in parameter.
+
 ## PostGIS Integration ##
 
 The `pointcloud_postgis` extension adds functions that allow you to use PostgreSQL Pointcloud with PostGIS, converting PcPoint and PcPatch to Geometry and doing spatial filtering on point cloud data. The `pointcloud_postgis` extension depends on both the `postgis` and `pointcloud` extensions, so they must be installed first:

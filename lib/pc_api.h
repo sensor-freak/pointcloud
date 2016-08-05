@@ -431,4 +431,7 @@ PCPATCH* pc_patch_filter_between_by_name(const PCPATCH *pa, const char *name, do
 /** get point n */
 PCPOINT *pc_patch_pointn(const PCPATCH *patch, int n);
 
+/** Subset batch based on index */
+PCPATCH* pc_patch_range(const PCPATCH *pa, int first, int cound);
+
 #endif /* _PC_API_H */
