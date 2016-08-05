@@ -440,4 +440,7 @@ PCPATCH *pc_patch_interp(
     const char *name1, const char *name2,
     char sorted1, char sorted2);
 
+/** Subset batch based on index */
+PCPATCH* pc_patch_range(const PCPATCH *pa, int first, int cound);
+
 #endif /* _PC_API_H */

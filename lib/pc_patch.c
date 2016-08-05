@@ -522,6 +522,72 @@ pc_patch_from_patchlist(PCPATCH **palist, int numpatches)
 	return (PCPATCH*)paout;
 }
 
+// first: the first element to select.
+// count: the number of element to select from the first one.
+PCPATCH *
+pc_patch_range(const PCPATCH *pa, int first, int count)
+{
+    PCPATCH_UNCOMPRESSED *paout;
+    uint8_t *buf;
+    size_t size;
+    size_t start;
+
+    assert(pa);
+
+    if(first+count > pa->npoints)
+	count = pa->npoints - first;
+
+    paout = pc_patch_uncompressed_make(pa->schema, count);
+    buf = paout->data;
+    paout->npoints = count;
+    start = pa->schema->size * first;
+    size = pa->schema->size * count;
+
+    switch( pa->type )
+    {
+	case PC_NONE:
+	{
+	    PCPATCH_UNCOMPRESSED *pu = (PCPATCH_UNCOMPRESSED*)pa;
+	    memcpy(buf, pu->data + start, size);
+	    break;
+	}
+	case PC_DIMENSIONAL:
+	{
+	    PCPATCH_UNCOMPRESSED *pu = pc_patch_uncompressed_from_dimensional((const PCPATCH_DIMENSIONAL*)pa);
+	    memcpy(buf, pu->data + start, size);
+	    pc_patch_free((PCPATCH*)pu);
+	    break;
+	}
+	case PC_GHT:
+	{
+	    PCPATCH_UNCOMPRESSED *pu = pc_patch_uncompressed_from_ght((const PCPATCH_GHT*)pa);
+	    memcpy(buf, pu->data + start, size);
+	    pc_patch_free((PCPATCH*)pu);
+	    break;
+	}
+	case PC_LAZPERF:
+	{
+	    PCPATCH_UNCOMPRESSED *pu = pc_patch_uncompressed_from_lazperf((const PCPATCH_LAZPERF*)pa);
+	    memcpy(buf, pu->data + start, size);
+	    pc_patch_free((PCPATCH*)pu);
+	    break;
+	}
+	default:
+	{
+	    pcerror("%s: unknown compression type (%d)", __func__, pa->type);
+	    break;
+	}
+    }
+
+    if ( PC_FAILURE == pc_patch_uncompressed_compute_stats(paout) )
+    {
+	    pcerror("%s: stats computation failed", __func__);
+	    return NULL;
+    }
+
+    return (PCPATCH*) paout;
+}
+
 /** get point n from patch */
 /** positive 1-based:  1=first point,  npoints=last  point */
 /** negative 1-based: -1=last  point, -npoints=first point */
