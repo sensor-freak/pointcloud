@@ -536,6 +536,8 @@ pc_patch_range(const PCPATCH *pa, int first, int count)
 
     if(first+count > pa->npoints)
 	count = pa->npoints - first;
+    if ( count <= 0 )
+	return NULL;
 
     paout = pc_patch_uncompressed_make(pa->schema, count);
     buf = paout->data;
