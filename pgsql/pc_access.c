@@ -24,6 +24,7 @@ Datum pcpatch_uncompress(PG_FUNCTION_ARGS);
 Datum pcpatch_compress(PG_FUNCTION_ARGS);
 Datum pcpatch_numpoints(PG_FUNCTION_ARGS);
 Datum pcpatch_pointn(PG_FUNCTION_ARGS);
+Datum pcpatch_transform(PG_FUNCTION_ARGS);
 Datum pcpatch_pcid(PG_FUNCTION_ARGS);
 Datum pcpatch_summary(PG_FUNCTION_ARGS);
 Datum pcpatch_compression(PG_FUNCTION_ARGS);
@@ -668,6 +669,29 @@ Datum pcpatch_pointn(PG_FUNCTION_ARGS)
 	serpt = pc_point_serialize(pt);
 	pc_point_free(pt);
 	PG_RETURN_POINTER(serpt);
+}
+
+PG_FUNCTION_INFO_V1(pcpatch_transform);
+Datum pcpatch_transform(PG_FUNCTION_ARGS)
+{
+	PCPATCH *paout = NULL;
+	SERIALIZED_PATCH *serpatch;
+	SERIALIZED_PATCH *serpa = PG_GETARG_SERPATCH_P(0);
+	int32 pcid = PG_GETARG_INT32(1);
+	PCSCHEMA *schema = pc_schema_from_pcid(serpa->pcid, fcinfo);
+	PCSCHEMA *new_schema = pc_schema_from_pcid(pcid, fcinfo);
+	PCPATCH *patch = pc_patch_deserialize(serpa, schema);
+
+	if(patch) {
+	  paout = pc_patch_transform(patch, new_schema);
+	  pc_patch_free(patch);
+	}
+
+	if(!paout) PG_RETURN_NULL();
+
+	serpatch = pc_patch_serialize(paout, NULL);
+	pc_patch_free(paout);
+	PG_RETURN_POINTER(serpatch);
 }
 
 PG_FUNCTION_INFO_V1(pcpatch_pcid);

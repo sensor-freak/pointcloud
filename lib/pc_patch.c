@@ -544,3 +544,40 @@ PCPOINT *pc_patch_pointn(const PCPATCH *patch, int n)
     pcerror("%s: unsupported compression %d requested", __func__, patch->type);
     return NULL;
 }
+
+PCPATCH*
+pc_patch_transform(const PCPATCH *patch, const PCSCHEMA *new_schema)
+{
+    PCPATCH_UNCOMPRESSED *paout = NULL;
+    PCPOINTLIST *opl, *npl;
+    PCPOINT *opt, *npt;
+    double val;
+    size_t i, j;
+    const PCSCHEMA *old_schema;
+
+    old_schema = patch->schema;
+
+    // init point lists
+    opl = pc_pointlist_from_patch(patch);
+    npl = pc_pointlist_make(patch->npoints);
+
+    // build the new pointlist
+    pcinfo("pc_patch_extract 2");
+    for( i=0; i<patch->npoints; i++)
+    {
+	opt = pc_pointlist_get_point(opl, i);
+	npt = pc_point_make(new_schema);
+
+	for(j=0; j<new_schema->ndims; j++)
+	{
+	    pc_point_get_double_by_name(opt, new_schema->dims[j]->name, &val);
+	    pc_point_set_double_by_name(npt, new_schema->dims[j]->name, val);
+	}
+
+	pc_pointlist_add_point(npl, npt);
+    }
+
+    paout = (PCPATCH*) pc_patch_uncompressed_from_pointlist(npl);
+
+    return (PCPATCH*) paout;
+}
