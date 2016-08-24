@@ -553,16 +553,30 @@ pc_patch_transform(const PCPATCH *patch, const PCSCHEMA *new_schema)
     PCPOINT *opt, *npt;
     double val;
     size_t i, j;
+    char *name;
+    PCDIMENSION *dim;
     const PCSCHEMA *old_schema;
 
     old_schema = patch->schema;
+
+    // check if all dimension in new schema are well defined in the old schema
+    for ( i=0; i<new_schema->ndims; i++ )
+    {
+	name = new_schema->dims[i]->name;
+	dim = pc_schema_get_dimension_by_name(old_schema, name);
+
+	if ( dim == NULL )
+	{
+	    pcerror("'%s': invalid transformation from schema '%d' to '%d'", __func__, patch->schema->pcid, new_schema->pcid);
+	    return NULL;
+	}
+    }
 
     // init point lists
     opl = pc_pointlist_from_patch(patch);
     npl = pc_pointlist_make(patch->npoints);
 
     // build the new pointlist
-    pcinfo("pc_patch_extract 2");
     for( i=0; i<patch->npoints; i++)
     {
 	opt = pc_pointlist_get_point(opl, i);
@@ -570,14 +584,17 @@ pc_patch_transform(const PCPATCH *patch, const PCSCHEMA *new_schema)
 
 	for(j=0; j<new_schema->ndims; j++)
 	{
-	    pc_point_get_double_by_name(opt, new_schema->dims[j]->name, &val);
-	    pc_point_set_double_by_name(npt, new_schema->dims[j]->name, val);
+	    pc_point_get_double(opt, new_schema->dims[j], &val);
+	    pc_point_set_double(npt, new_schema->dims[j], val);
 	}
 
 	pc_pointlist_add_point(npl, npt);
     }
 
-    paout = (PCPATCH*) pc_patch_uncompressed_from_pointlist(npl);
+    paout = pc_patch_uncompressed_from_pointlist(npl);
+
+    pc_pointlist_free(npl);
+    pc_pointlist_free(opl);
 
     return (PCPATCH*) paout;
 }
