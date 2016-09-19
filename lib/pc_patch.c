@@ -652,7 +652,7 @@ pc_patch_transform(const PCPATCH *patch, const PCSCHEMA *new_schema)
 
 	for(j=0; j<new_schema->ndims; j++)
 	{
-	    pc_point_get_double(opt, new_schema->dims[j], &val);
+	    pc_point_get_double_by_name(opt, new_schema->dims[j]->name, &val);
 	    pc_point_set_double(npt, new_schema->dims[j], val);
 	}
 
