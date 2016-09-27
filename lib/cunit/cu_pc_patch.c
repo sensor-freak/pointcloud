@@ -807,10 +807,6 @@ test_patch_transform_compression_none()
     pc_patch_free(pat);
     pcfree(str);
 
-    // transform a patch to a schema with unkown dimension
-    pat = pc_patch_transform((PCPATCH*) pau, lasschema);
-    CU_ASSERT(pat == NULL);
-
     pc_patch_free((PCPATCH*) pau);
     pc_pointlist_free(pl);
 }
@@ -886,10 +882,6 @@ test_patch_transform_compression_laz()
 
     pc_patch_free(pat);
     pcfree(str);
-
-    // transform a patch to a schema with unkown dimension
-    pat = pc_patch_transform((PCPATCH*) pal, lasschema);
-    CU_ASSERT(pat == NULL);
 
     pc_patch_free((PCPATCH*) pal);
     pc_pointlist_free(pl);
@@ -1040,10 +1032,6 @@ test_patch_transform_dimensional_compression(enum DIMCOMPRESSIONS dimcomp)
 
     pc_patch_free(pat);
     pcfree(str);
-
-    // transform a patch to a schema with unkown dimension
-    pat = pc_patch_transform((PCPATCH*) padim2, lasschema);
-    CU_ASSERT(pat == NULL);
 
     pc_point_free(pt);
     pc_pointlist_free(pl);

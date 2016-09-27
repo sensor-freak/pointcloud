@@ -627,19 +627,6 @@ pc_patch_transform(const PCPATCH *patch, const PCSCHEMA *new_schema)
 
     old_schema = patch->schema;
 
-    // check if all dimension in new schema are well defined in the old schema
-    for ( i=0; i<new_schema->ndims; i++ )
-    {
-	name = new_schema->dims[i]->name;
-	dim = pc_schema_get_dimension_by_name(old_schema, name);
-
-	if ( dim == NULL )
-	{
-	    pcerror("'%s': invalid transformation from schema '%d' to '%d'", __func__, patch->schema->pcid, new_schema->pcid);
-	    return NULL;
-	}
-    }
-
     // init point lists
     opl = pc_pointlist_from_patch(patch);
     npl = pc_pointlist_make(patch->npoints);
@@ -652,7 +639,13 @@ pc_patch_transform(const PCPATCH *patch, const PCSCHEMA *new_schema)
 
 	for(j=0; j<new_schema->ndims; j++)
 	{
-	    pc_point_get_double_by_name(opt, new_schema->dims[j]->name, &val);
+	    name = new_schema->dims[j]->name;
+	    dim = pc_schema_get_dimension_by_name(old_schema, name);
+
+	    val = 0.0;
+	    if ( dim != NULL )
+		pc_point_get_double_by_name(opt, name, &val);
+
 	    pc_point_set_double(npt, new_schema->dims[j], val);
 	}
 
