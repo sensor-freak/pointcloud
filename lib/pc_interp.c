@@ -50,7 +50,7 @@ void * blower_arg(
             lim++;
         } 		/* else move left */
     }
-    return base;
+    return ((void *)base);
 }
 
 
@@ -139,7 +139,7 @@ pc_point_uncompressed_interp(const PCPATCH_UNCOMPRESSED *pu, PCDIMENSION *dim, d
     return NULL;
 }
 
-static PCPATCH *
+static PCPATCH_UNCOMPRESSED *
 pc_patch_uncompressed_interp(const PCPATCH_UNCOMPRESSED *pu1, const PCPATCH_UNCOMPRESSED *pu2, 
     PCDIMENSION *dim1, PCDIMENSION *dim2, char sorted1, char sorted2)
 {
@@ -171,9 +171,9 @@ pc_patch_uncompressed_interp(const PCPATCH_UNCOMPRESSED *pu1, const PCPATCH_UNCO
         buf2 += sz2;
     }
     
-    if(pa->npoints) return (PCPATCH *)pa;
+    if(pa->npoints) return pa;
     
-    pc_patch_free(pa);
+    pc_patch_free((PCPATCH *)pa);
     return NULL;    
 }
 
@@ -224,7 +224,7 @@ PCPATCH *pc_patch_interp(
         pcerror("Patch uncompression failed");
         return NULL;
     }
-    PCPATCH *pa = pc_patch_uncompressed_interp((PCPATCH_UNCOMPRESSED *)pu1,(PCPATCH_UNCOMPRESSED *)pu2,dim1,dim2,sorted1,sorted2);
+    PCPATCH_UNCOMPRESSED *pa = pc_patch_uncompressed_interp((PCPATCH_UNCOMPRESSED *)pu1,(PCPATCH_UNCOMPRESSED *)pu2,dim1,dim2,sorted1,sorted2);
     if ( pu1 != p1 )
         pc_patch_free(pu1);
     if ( pu2 != p2 )
@@ -232,17 +232,17 @@ PCPATCH *pc_patch_interp(
 
 	if ( pa && PC_FAILURE == pc_patch_uncompressed_compute_extent(pa) )
 	{
-        pc_patch_free(pa);
+        pc_patch_free((PCPATCH *)pa);
 		pcerror("%s: bounds computation failed", __func__);
 		return NULL;
 	}
 	
 	if ( pa && PC_FAILURE == pc_patch_uncompressed_compute_stats(pa) )
 	{
-        pc_patch_free(pa);
+        pc_patch_free((PCPATCH *)pa);
 		pcerror("%s: stats computation failed", __func__);
 		return NULL;
 	}
 
-    return pa;
+    return (PCPATCH *)pa;
 }
