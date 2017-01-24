@@ -150,4 +150,9 @@ CU_TestInfo interp_tests[] = {
     CU_TEST_INFO_NULL
 };
 
-CU_SuiteInfo interp_suite = {"interp", init_suite, clean_suite, interp_tests};
+CU_SuiteInfo interp_suite = {
+    .pName = "interp",
+    .pInitFunc = init_suite,
+    .pCleanupFunc = clean_suite,
+    .pTests = interp_tests
+};
