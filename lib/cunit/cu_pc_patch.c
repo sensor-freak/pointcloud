@@ -942,7 +942,7 @@ test_patch_transform_compression_ght()
 {
     // init data
     PCPATCH_GHT *pag;
-    PCPATCH *pat;
+    PCPATCH *pat0, *pat1;
     PCPOINTLIST *pl;
     PCPOINT *pt;
     char *str;
@@ -955,10 +955,10 @@ test_patch_transform_compression_ght()
     for ( i = npts; i >= 0; i-- )
     {
         pt = pc_point_make(simpleschema);
-        pc_point_set_double_by_name(pt, "x", i*0.1);
-        pc_point_set_double_by_name(pt, "y", i*0.2);
+        pc_point_set_double_by_name(pt, "X", i*0.1);
+        pc_point_set_double_by_name(pt, "Y", i*0.2);
         pc_point_set_double_by_name(pt, "Z", i*0.3);
-        pc_point_set_double_by_name(pt, "intensity", 10);
+        pc_point_set_double_by_name(pt, "Intensity", 10);
         pc_pointlist_add_point(pl, pt);
     }
 
@@ -966,18 +966,26 @@ test_patch_transform_compression_ght()
     pag = pc_patch_ght_from_pointlist(pl);
 
     // transform a patch to a valid schema
-    pat = pc_patch_transform((PCPATCH*) pag, simplexyzschema);
-    str = pc_patch_to_string(pat);
+    pat0 = pc_patch_transform((PCPATCH*) pag, simplexyzschema);
+    str = pc_patch_to_string(pat0);
 
-    CU_ASSERT(pat != NULL);
+    CU_ASSERT(pat0 != NULL);
     CU_ASSERT_STRING_EQUAL(str, "{\"pcid\":0,\"pts\":[[0.4,0.8,1.2],[0.3,0.6,0.9],[0.2,0.4,0.6],[0.1,0.2,0.3],[0,0,0]]}");
 
-    pc_patch_free(pat);
     pcfree(str);
 
     // transform a patch to a schema with unkown dimension
-    pat = pc_patch_transform((PCPATCH*) pag, lasschema);
-    CU_ASSERT(pat == NULL);
+    pat1 = pc_patch_transform(pat0, simpleschema);
+    str = pc_patch_to_string(pat1);
+
+    CU_ASSERT(pat1 != NULL);
+    CU_ASSERT_STRING_EQUAL(str, "{\"pcid\":0,\"pts\":[[0.4,0.8,1.2,0],[0.3,0.6,0.9,0],[0.2,0.4,0.6,0],[0.1,0.2,0.3,0],[0,0,0,0]]}");
+
+    pc_patch_free(pat0);
+    pc_patch_free(pat1);
+    pcfree(str);
+
+    /*CU_ASSERT_STRING_EQUAL(str, "{\"pcid\":0,\"pts\":[[0,0,0,10],[0.1,0.2,0.3,10],[0.2,0.4,0.6,10],[0.3,0.6,0.9,10],[0.4,0.8,1.2,10]]}");*/
 
     pc_patch_free((PCPATCH*) pag);
 #endif
