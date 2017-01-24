@@ -847,7 +847,7 @@ test_patch_range_compression_lazperf()
 }
 
 static void
-test_patch_transform_compression_laz()
+test_patch_transform_compression_lazperf()
 {
     // init data
     PCPATCH_LAZPERF *pal;
@@ -1117,12 +1117,14 @@ CU_TestInfo patch_tests[] = {
 	PC_TEST(test_patch_range_compression_lazperf),
 #endif
 	PC_TEST(test_patch_transform_compression_none),
-	PC_TEST(test_patch_transform_compression_laz),
 	PC_TEST(test_patch_transform_compression_ght),
 	PC_TEST(test_patch_transform_dimensional_compression_none),
 	PC_TEST(test_patch_transform_dimensional_compression_zlib),
 	PC_TEST(test_patch_transform_dimensional_compression_sigbits),
 	PC_TEST(test_patch_transform_dimensional_compression_rle),
+#ifdef HAVE_LAZPERF
+	PC_TEST(test_patch_transform_compression_lazperf),
+#endif
 	CU_TEST_INFO_NULL
 };
 
