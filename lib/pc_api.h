@@ -443,7 +443,7 @@ PCPATCH *pc_patch_interp(
 /** Subset batch based on index */
 PCPATCH* pc_patch_range(const PCPATCH *pa, int first, int cound);
 
-/** transform a patch with a different schema*/
-PCPATCH *pc_patch_transform(const PCPATCH *patch, const PCSCHEMA *schema);
+/** assign a schema to the patch */
+PCPATCH *pc_patch_set_schema(const PCPATCH *patch, const PCSCHEMA *schema);
 
 #endif /* _PC_API_H */

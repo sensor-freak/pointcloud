@@ -613,8 +613,9 @@ PCPOINT *pc_patch_pointn(const PCPATCH *patch, int n)
     return NULL;
 }
 
+/** set schema for patch */
 PCPATCH*
-pc_patch_transform(const PCPATCH *patch, const PCSCHEMA *new_schema)
+pc_patch_set_schema(const PCPATCH *patch, const PCSCHEMA *new_schema)
 {
     PCPATCH_UNCOMPRESSED *paout = NULL;
     PCPOINTLIST *opl, *npl;

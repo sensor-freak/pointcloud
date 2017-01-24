@@ -771,7 +771,7 @@ test_patch_range_compression_none()
 }
 
 static void
-test_patch_transform_compression_none()
+test_patch_set_schema_compression_none()
 {
     // init data
     PCPATCH_UNCOMPRESSED *pau;
@@ -797,8 +797,8 @@ test_patch_transform_compression_none()
 
     pau = pc_patch_uncompressed_from_pointlist(pl);
 
-    // transform a patch to a valid schema
-    pat = pc_patch_transform((PCPATCH*) pau, simplexyzschema);
+    // assign a valid schema to the patch
+    pat = pc_patch_set_schema((PCPATCH*) pau, simplexyzschema);
     str = pc_patch_to_string(pat);
 
     CU_ASSERT(pat != NULL);
@@ -847,7 +847,7 @@ test_patch_range_compression_lazperf()
 }
 
 static void
-test_patch_transform_compression_lazperf()
+test_patch_set_schema_compression_lazperf()
 {
     // init data
     PCPATCH_LAZPERF *pal;
@@ -873,8 +873,8 @@ test_patch_transform_compression_lazperf()
 
     pal = pc_patch_lazperf_from_pointlist(pl);
 
-    // transform a patch to a valid schema
-    pat = pc_patch_transform((PCPATCH*) pal, simplexyzschema);
+    // assign a valid schema to the patch
+    pat = pc_patch_set_schema((PCPATCH*) pal, simplexyzschema);
     str = pc_patch_to_string(pat);
 
     CU_ASSERT(pat != NULL);
@@ -938,7 +938,7 @@ test_patch_range_compression_dimensional(enum DIMCOMPRESSIONS dimcomp)
 }
 
 static void
-test_patch_transform_compression_ght()
+test_patch_set_schema_compression_ght()
 {
     // init data
     PCPATCH_GHT *pag;
@@ -965,8 +965,8 @@ test_patch_transform_compression_ght()
 #ifdef HAVE_LIBGHT
     pag = pc_patch_ght_from_pointlist(pl);
 
-    // transform a patch to a valid schema
-    pat0 = pc_patch_transform((PCPATCH*) pag, simplexyzschema);
+    // assign a valid schema to the patch
+    pat0 = pc_patch_set_schema((PCPATCH*) pag, simplexyzschema);
     str = pc_patch_to_string(pat0);
 
     CU_ASSERT(pat0 != NULL);
@@ -974,8 +974,8 @@ test_patch_transform_compression_ght()
 
     pcfree(str);
 
-    // transform a patch to a schema with unkown dimension
-    pat1 = pc_patch_transform(pat0, simpleschema);
+    // assign a schema with unknown dimension to the patch
+    pat1 = pc_patch_set_schema(pat0, simpleschema);
     str = pc_patch_to_string(pat1);
 
     CU_ASSERT(pat1 != NULL);
@@ -985,8 +985,6 @@ test_patch_transform_compression_ght()
     pc_patch_free(pat1);
     pcfree(str);
 
-    /*CU_ASSERT_STRING_EQUAL(str, "{\"pcid\":0,\"pts\":[[0,0,0,10],[0.1,0.2,0.3,10],[0.2,0.4,0.6,10],[0.3,0.6,0.9,10],[0.4,0.8,1.2,10]]}");*/
-
     pc_patch_free((PCPATCH*) pag);
 #endif
 
@@ -994,7 +992,7 @@ test_patch_transform_compression_ght()
 }
 
 static void
-test_patch_transform_dimensional_compression(enum DIMCOMPRESSIONS dimcomp)
+test_patch_set_schema_dimensional_compression(enum DIMCOMPRESSIONS dimcomp)
 {
     // init data
     PCPATCH_DIMENSIONAL *padim1, *padim2;
@@ -1029,8 +1027,8 @@ test_patch_transform_dimensional_compression(enum DIMCOMPRESSIONS dimcomp)
     // compress patch
     padim2 = pc_patch_dimensional_compress(padim1, stats);
 
-    // transform a patch to a valid schema
-    pat = pc_patch_transform((PCPATCH*) padim2, simplexyzschema);
+    // assign a valid schema to the patch
+    pat = pc_patch_set_schema((PCPATCH*) padim2, simplexyzschema);
 
     pt = pc_patch_pointn(pat, 1);
     str = pc_point_to_string(pt);
@@ -1073,27 +1071,27 @@ test_patch_range_compression_dimensional_rle()
 }
 
 static void
-test_patch_transform_dimensional_compression_none()
+test_patch_set_schema_dimensional_compression_none()
 {
-    test_patch_transform_dimensional_compression(PC_DIM_NONE);
+    test_patch_set_schema_dimensional_compression(PC_DIM_NONE);
 }
 
 static void
-test_patch_transform_dimensional_compression_zlib()
+test_patch_set_schema_dimensional_compression_zlib()
 {
-    test_patch_transform_dimensional_compression(PC_DIM_ZLIB);
+    test_patch_set_schema_dimensional_compression(PC_DIM_ZLIB);
 }
 
 static void
-test_patch_transform_dimensional_compression_sigbits()
+test_patch_set_schema_dimensional_compression_sigbits()
 {
-    test_patch_transform_dimensional_compression(PC_DIM_SIGBITS);
+    test_patch_set_schema_dimensional_compression(PC_DIM_SIGBITS);
 }
 
 static void
-test_patch_transform_dimensional_compression_rle()
+test_patch_set_schema_dimensional_compression_rle()
 {
-    test_patch_transform_dimensional_compression(PC_DIM_RLE);
+    test_patch_set_schema_dimensional_compression(PC_DIM_RLE);
 }
 
 /* REGISTER ***********************************************************/
@@ -1124,14 +1122,14 @@ CU_TestInfo patch_tests[] = {
 #ifdef HAVE_LAZPERF
 	PC_TEST(test_patch_range_compression_lazperf),
 #endif
-	PC_TEST(test_patch_transform_compression_none),
-	PC_TEST(test_patch_transform_compression_ght),
-	PC_TEST(test_patch_transform_dimensional_compression_none),
-	PC_TEST(test_patch_transform_dimensional_compression_zlib),
-	PC_TEST(test_patch_transform_dimensional_compression_sigbits),
-	PC_TEST(test_patch_transform_dimensional_compression_rle),
+	PC_TEST(test_patch_set_schema_compression_none),
+	PC_TEST(test_patch_set_schema_compression_ght),
+	PC_TEST(test_patch_set_schema_dimensional_compression_none),
+	PC_TEST(test_patch_set_schema_dimensional_compression_zlib),
+	PC_TEST(test_patch_set_schema_dimensional_compression_sigbits),
+	PC_TEST(test_patch_set_schema_dimensional_compression_rle),
 #ifdef HAVE_LAZPERF
-	PC_TEST(test_patch_transform_compression_lazperf),
+	PC_TEST(test_patch_set_schema_compression_lazperf),
 #endif
 	CU_TEST_INFO_NULL
 };
