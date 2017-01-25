@@ -660,3 +660,79 @@ pc_patch_set_schema(const PCPATCH *patch, const PCSCHEMA *new_schema)
 
     return (PCPATCH*) paout;
 }
+
+/**
+* Rotate a patch given a unit quaternion.
+*/
+PCPATCH *
+pc_patch_rotate_quaternion(
+    const PCPATCH *patch,
+    double qw, double qx, double qy, double qz,
+    const char *xdimname, const char *ydimname, const char *zdimname)
+{
+    PCPATCH_UNCOMPRESSED *uncompressed_patch;
+    PCDIMENSION *xdim, *ydim, *zdim;
+    const PCSCHEMA *schema;
+    PCPOINTLIST *pointlist;
+    const PCMAT33 *qmat;
+    PCVEC3 *vec, *rvec;
+    size_t i;
+
+    vec = pcalloc(sizeof(PCVEC3));
+    if ( NULL == vec )
+        return NULL;
+
+    rvec = pcalloc(sizeof(PCVEC3));
+    if ( NULL == rvec )
+        return NULL;
+
+    qmat = pc_matrix_create_from_quaternion(qw, qx, qy, qz);
+    if ( NULL == qmat )
+        return NULL;
+
+    if ( patch->type == PC_NONE )
+    {
+        pointlist = pc_pointlist_from_uncompressed((PCPATCH_UNCOMPRESSED *)patch);
+        uncompressed_patch = pc_patch_uncompressed_from_pointlist(pointlist);
+        pc_pointlist_free(pointlist);
+    }
+    else
+    {
+        uncompressed_patch = (PCPATCH_UNCOMPRESSED *)pc_patch_uncompress(patch);
+    }
+    if ( NULL == uncompressed_patch )
+        return NULL;
+
+    schema = uncompressed_patch->schema;
+
+    xdim = pc_schema_get_dimension_by_name(schema, xdimname);
+    ydim = pc_schema_get_dimension_by_name(schema, ydimname);
+    zdim = pc_schema_get_dimension_by_name(schema, zdimname);
+
+    pointlist = pc_pointlist_from_uncompressed(uncompressed_patch);
+
+    // the points of pointlist include pointers to the uncompressed patch data
+    // block, so updating the points changes the patch payload
+
+    for ( i = 0; i < pointlist->npoints; i++ )
+    {
+        PCPOINT *point = pc_pointlist_get_point(pointlist, i);
+
+        pc_point_get_double(point, xdim, &(*vec)[0]);
+        pc_point_get_double(point, ydim, &(*vec)[1]);
+        pc_point_get_double(point, zdim, &(*vec)[2]);
+
+        pc_matrix_multiply_vector(qmat, vec, rvec);
+
+        pc_point_set_double(point, xdim, (*rvec)[0]);
+        pc_point_set_double(point, ydim, (*rvec)[1]);
+        pc_point_set_double(point, zdim, (*rvec)[2]);
+    }
+
+    pc_pointlist_free(pointlist);
+    pcfree((void *)qmat);
+    pcfree((void *)rvec);
+    pcfree((void *)vec);
+
+    return ((PCPATCH *)uncompressed_patch);
+}

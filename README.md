@@ -485,6 +485,16 @@ Now that you have created two tables, you'll see entries for them in the `pointc
 
 > Sets the schema on a PcPatch, given a valid `pcid` schema number. The internal values of the points may change for dimensions where the offset and/or scale are different between the "old" and the "new" schema, so that the corresponding double values are unchanged, up to the precision of the underlying representation. Also, 0 values will be used for dimensions that are in the new schema but not in the old schema. And the values of dimensions that are in the old schema but not in the new schema will be discarded.
 
+**PC_RotateQuaternion(p pcpatch, qw float8, qx float8, qy float8, qz float8, xdimname text, ydimname text, zdimname text)** returns **pcpatch**
+
+> Rotate a patch given a unit quaternion (qw, qx, qy, qz). For example this how to rotate patches by π/2 around the x axis:
+>
+>     WITH angle(value) AS (
+>       SELECT pi()/2.0
+>     )
+>     SELECT PC_RotateQuaternion(pa, cos(angle.value / 2.0), sin(angle.value / 2.0), 0, 0, 'x', 'y', 'z')
+>     FROM patches, angle;
+
 ## PostGIS Integration ##
 
 The `pointcloud_postgis` extension adds functions that allow you to use PostgreSQL Pointcloud with PostGIS, converting PcPoint and PcPatch to Geometry and doing spatial filtering on point cloud data. The `pointcloud_postgis` extension depends on both the `postgis` and `pointcloud` extensions, so they must be installed first:
