@@ -318,6 +318,10 @@ CREATE OR REPLACE FUNCTION PC_SetPCID(p pcpatch, pcid int4)
     RETURNS pcpatch AS 'MODULE_PATHNAME', 'pcpatch_setpcid'
     LANGUAGE 'c' IMMUTABLE STRICT;
 
+CREATE OR REPLACE FUNCTION PC_RotateQuaternion(p pcpatch, qw float8, qx float8, qy float8, qz float8, xdimname text, ydimname text, zdimname text)
+    RETURNS pcpatch AS 'MODULE_PATHNAME', 'pcpatch_rotate_quaternion'
+    LANGUAGE 'c' IMMUTABLE STRICT;
+
 -------------------------------------------------------------------
 --  POINTCLOUD_COLUMNS
 -------------------------------------------------------------------

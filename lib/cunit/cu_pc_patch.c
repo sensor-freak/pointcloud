@@ -7,6 +7,7 @@
 *
 ***********************************************************************/
 
+#include <math.h>
 #include "CUnit/Basic.h"
 #include "cu_tester.h"
 
@@ -1094,6 +1095,190 @@ test_patch_set_schema_dimensional_compression_rle()
     test_patch_set_schema_dimensional_compression(PC_DIM_RLE);
 }
 
+static void
+test_patch_rotate_quaternion_compression_none()
+{
+    PCPATCH *patch;
+    PCPATCH_UNCOMPRESSED *patch_uncompressed;
+    PCPOINTLIST *pl;
+    PCPOINT *pt;
+    double angle;
+    double qw, qx, qy, qz;
+    double v;
+
+    // (1, 1, 1) is the point we're going to rotate
+    pl = pc_pointlist_make(1);
+    pt = pc_point_make(simplexyzschema);
+    pc_point_set_double_by_name(pt, "x", 1.0);
+    pc_point_set_double_by_name(pt, "y", 1.0);
+    pc_point_set_double_by_name(pt, "z", 1.0);
+    pc_pointlist_add_point(pl, pt);
+
+    // π/2 rotation around x axis
+    // expected result: (1, -1, 1)
+    patch_uncompressed = pc_patch_uncompressed_from_pointlist(pl);
+    angle = M_PI_2;
+    qw = cos(angle / 2.);
+    qx = sin(angle / 2.);
+    qy = 0;
+    qz = 0;
+    patch = pc_patch_rotate_quaternion(
+            (PCPATCH *)patch_uncompressed, qw, qx, qy, qz, "x", "y", "z");
+    CU_ASSERT(patch != NULL);
+    pt = pc_patch_pointn(patch, 1);
+    CU_ASSERT(pt != NULL);
+    pc_point_get_double_by_name(pt, "x", &v);
+    CU_ASSERT(v == 1);
+    pc_point_get_double_by_name(pt, "y", &v);
+    CU_ASSERT(v == -1);
+    pc_point_get_double_by_name(pt, "z", &v);
+    CU_ASSERT(v == 1);
+    pc_point_free(pt);
+    pc_patch_free(patch);
+    pc_patch_free((PCPATCH*)patch_uncompressed);
+
+    // π/2 rotation around y axis
+    // expected result: (1, 1, -1)
+    patch_uncompressed = pc_patch_uncompressed_from_pointlist(pl);
+    angle = M_PI_2;
+    qw = cos(angle / 2.);
+    qx = 0;
+    qy = sin(angle / 2.);
+    qz = 0;
+    patch = pc_patch_rotate_quaternion(
+            (PCPATCH *)patch_uncompressed, qw, qx, qy, qz, "x", "y", "z");
+    CU_ASSERT(patch != NULL);
+    pt = pc_patch_pointn(patch, 1);
+    CU_ASSERT(pt != NULL);
+    pc_point_get_double_by_name(pt, "x", &v);
+    CU_ASSERT(v == 1);
+    pc_point_get_double_by_name(pt, "y", &v);
+    CU_ASSERT(v == 1);
+    pc_point_get_double_by_name(pt, "z", &v);
+    CU_ASSERT(v == -1);
+    pc_point_free(pt);
+    pc_patch_free(patch);
+    pc_patch_free((PCPATCH*)patch_uncompressed);
+
+    // π/2 rotation around z axis
+    // expected result: (-1, 1, 1)
+    patch_uncompressed = pc_patch_uncompressed_from_pointlist(pl);
+    angle = M_PI_2;
+    qw = cos(angle / 2.);
+    qx = 0;
+    qy = 0;
+    qz = sin(angle / 2.);
+    patch = pc_patch_rotate_quaternion(
+            (PCPATCH *)patch_uncompressed, qw, qx, qy, qz, "x", "y", "z");
+    CU_ASSERT(patch != NULL);
+    pt = pc_patch_pointn(patch, 1);
+    CU_ASSERT(pt != NULL);
+    pc_point_get_double_by_name(pt, "x", &v);
+    CU_ASSERT(v == -1);
+    pc_point_get_double_by_name(pt, "y", &v);
+    CU_ASSERT(v == 1);
+    pc_point_get_double_by_name(pt, "z", &v);
+    CU_ASSERT(v == 1);
+    pc_point_free(pt);
+    pc_patch_free(patch);
+    pc_patch_free((PCPATCH*)patch_uncompressed);
+
+    pc_pointlist_free(pl);
+}
+
+#ifdef HAVE_LIBGHT
+static void
+test_patch_rotate_quaternion_compression_ght()
+{
+    PCPATCH *patch;
+    PCPATCH_GHT *patch_ght;
+    PCPOINTLIST *pl;
+    PCPOINT *pt;
+    double angle;
+    double qw, qx, qy, qz;
+    double v;
+
+    // (1, 1, 1) is the point we're going to rotate
+    pl = pc_pointlist_make(1);
+    pt = pc_point_make(simplexyzschema);
+    pc_point_set_double_by_name(pt, "x", 1.0);
+    pc_point_set_double_by_name(pt, "y", 1.0);
+    pc_point_set_double_by_name(pt, "z", 1.0);
+    pc_pointlist_add_point(pl, pt);
+
+    // π/2 rotation around x axis
+    // expected result: (1, -1, 1)
+    patch_ght = pc_patch_ght_from_pointlist(pl);
+    angle = M_PI_2;
+    qw = cos(angle / 2.);
+    qx = sin(angle / 2.);
+    qy = 0;
+    qz = 0;
+    patch = pc_patch_rotate_quaternion(
+            (PCPATCH *)patch_ght, qw, qx, qy, qz, "x", "y", "z");
+    CU_ASSERT(patch != NULL);
+    pt = pc_patch_pointn(patch, 1);
+    CU_ASSERT(pt != NULL);
+    pc_point_get_double_by_name(pt, "x", &v);
+    CU_ASSERT(v == 1);
+    pc_point_get_double_by_name(pt, "y", &v);
+    CU_ASSERT(v == -1);
+    pc_point_get_double_by_name(pt, "z", &v);
+    CU_ASSERT(v == 1);
+    pc_point_free(pt);
+    pc_patch_free(patch);
+    pc_patch_free((PCPATCH *)patch_ght);
+
+    // π/2 rotation around y axis
+    // expected result: (1, 1, -1)
+    patch_ght = pc_patch_ght_from_pointlist(pl);
+    angle = M_PI_2;
+    qw = cos(angle / 2.);
+    qx = 0;
+    qy = sin(angle / 2.);
+    qz = 0;
+    patch = pc_patch_rotate_quaternion(
+            (PCPATCH *)patch_ght, qw, qx, qy, qz, "x", "y", "z");
+    CU_ASSERT(patch != NULL);
+    pt = pc_patch_pointn(patch, 1);
+    CU_ASSERT(pt != NULL);
+    pc_point_get_double_by_name(pt, "x", &v);
+    CU_ASSERT(v == 1);
+    pc_point_get_double_by_name(pt, "y", &v);
+    CU_ASSERT(v == 1);
+    pc_point_get_double_by_name(pt, "z", &v);
+    CU_ASSERT(v == -1);
+    pc_point_free(pt);
+    pc_patch_free(patch);
+    pc_patch_free((PCPATCH *)patch_ght);
+
+    // π/2 rotation around z axis
+    // expected result: (-1, 1, 1)
+    patch_ght = pc_patch_ght_from_pointlist(pl);
+    angle = M_PI_2;
+    qw = cos(angle / 2.);
+    qx = 0;
+    qy = 0;
+    qz = sin(angle / 2.);
+    patch = pc_patch_rotate_quaternion(
+            (PCPATCH *)patch_ght, qw, qx, qy, qz, "x", "y", "z");
+    CU_ASSERT(patch != NULL);
+    pt = pc_patch_pointn(patch, 1);
+    CU_ASSERT(pt != NULL);
+    pc_point_get_double_by_name(pt, "x", &v);
+    CU_ASSERT(v == -1);
+    pc_point_get_double_by_name(pt, "y", &v);
+    CU_ASSERT(v == 1);
+    pc_point_get_double_by_name(pt, "z", &v);
+    CU_ASSERT(v == 1);
+    pc_point_free(pt);
+    pc_patch_free(patch);
+    pc_patch_free((PCPATCH *)patch_ght);
+
+    pc_pointlist_free(pl);
+}
+#endif  /* HAVE_LIBGHT */
+
 /* REGISTER ***********************************************************/
 
 CU_TestInfo patch_tests[] = {
@@ -1130,6 +1315,10 @@ CU_TestInfo patch_tests[] = {
 	PC_TEST(test_patch_set_schema_dimensional_compression_rle),
 #ifdef HAVE_LAZPERF
 	PC_TEST(test_patch_set_schema_compression_lazperf),
+#endif
+    PC_TEST(test_patch_rotate_quaternion_compression_none),
+#ifdef HAVE_LIBGHT
+    PC_TEST(test_patch_rotate_quaternion_compression_ght),
 #endif
 	CU_TEST_INFO_NULL
 };

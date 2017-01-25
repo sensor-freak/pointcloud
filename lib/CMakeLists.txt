@@ -6,6 +6,7 @@ set ( PC_SOURCES
         pc_dimstats.c      
         pc_filter.c    
         pc_interp.c
+        pc_matrix.c
         pc_mem.c 
         pc_patch.c
         pc_patch_dimensional.c
