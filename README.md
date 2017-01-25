@@ -483,7 +483,7 @@ Now that you have created two tables, you'll see entries for them in the `pointc
 
 **PC_SetPCID(p pcpatch, pcid int4)** returns **pcpatch**
 
-> Set the schema on a PcPatch, given a valid `pcid` schema number. The values of dimensions may change if offsets or scales in the "new" schema are not the same as in the "old" schema. Also, 0 values will be used for dimensions that are in the new schema but not in the old schema. And the values of dimensions that are in the old schema but not in the new schema will be lost.
+> Sets the schema on a PcPatch, given a valid `pcid` schema number. The internal values of the points may change for dimensions where the offset and/or scale are different between the "old" and the "new" schema, so that the corresponding double values are unchanged, up to the precision of the underlying representation. Also, 0 values will be used for dimensions that are in the new schema but not in the old schema. And the values of dimensions that are in the old schema but not in the new schema will be discarded.
 
 ## PostGIS Integration ##
 
