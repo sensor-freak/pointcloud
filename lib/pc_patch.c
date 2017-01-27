@@ -645,7 +645,7 @@ pc_patch_set_schema(const PCPATCH *patch, const PCSCHEMA *new_schema)
 
             val = 0.0;
             if ( dim != NULL )
-                pc_point_get_double_by_name(opt, name, &val);
+                pc_point_get_double(opt, dim, &val);
 
             pc_point_set_double(npt, new_schema->dims[j], val);
         }
