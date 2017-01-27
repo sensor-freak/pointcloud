@@ -300,6 +300,7 @@ void pc_bitmap_filter(PCBITMAP *map, PC_FILTERTYPE filter, int i, double d, doub
 
 PCMAT33 *pc_matrix_create_from_quaternion(double qw, double qx, double qy, double qz);
 void pc_matrix_multiply_vector(const PCMAT33 *mat, const PCVEC3 *vec, PCVEC3 *rotatedvec);
+void pc_matrix_rotate_vector(const PCVEC3 *v, double qw, double qx, double qy, double qz, PCVEC3 *res);
 
 #endif /* _PC_API_INTERNAL_H */
 

@@ -674,7 +674,6 @@ pc_patch_rotate_quaternion(
     PCDIMENSION *xdim, *ydim, *zdim;
     const PCSCHEMA *schema;
     PCPOINTLIST *pointlist;
-    const PCMAT33 *qmat;
     PCVEC3 *vec, *rvec;
     size_t i;
 
@@ -684,10 +683,6 @@ pc_patch_rotate_quaternion(
 
     rvec = pcalloc(sizeof(PCVEC3));
     if ( NULL == rvec )
-        return NULL;
-
-    qmat = pc_matrix_create_from_quaternion(qw, qx, qy, qz);
-    if ( NULL == qmat )
         return NULL;
 
     if ( patch->type == PC_NONE )
@@ -722,7 +717,7 @@ pc_patch_rotate_quaternion(
         pc_point_get_double(point, ydim, &(*vec)[1]);
         pc_point_get_double(point, zdim, &(*vec)[2]);
 
-        pc_matrix_multiply_vector(qmat, vec, rvec);
+        pc_matrix_rotate_vector(vec, qw, qx, qy, qz, rvec);
 
         pc_point_set_double(point, xdim, (*rvec)[0]);
         pc_point_set_double(point, ydim, (*rvec)[1]);
@@ -730,7 +725,6 @@ pc_patch_rotate_quaternion(
     }
 
     pc_pointlist_free(pointlist);
-    pcfree((void *)qmat);
     pcfree((void *)rvec);
     pcfree((void *)vec);
 

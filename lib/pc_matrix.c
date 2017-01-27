@@ -61,3 +61,41 @@ pc_matrix_multiply_vector(const PCMAT33 *mat, const PCVEC3 *vec, PCVEC3 *res)
         (*mat)[7] * (*vec)[1] +
         (*mat)[8] * (*vec)[2];
 }
+
+void
+pc_matrix_cross_product(const PCVEC3 *vec1, const PCVEC3 *vec2, PCVEC3 *res)
+{
+    (*res)[0] = (*vec1)[1] * (*vec2)[2] - (*vec1[2]) * (*vec2)[1];
+    (*res)[1] = (*vec1)[2] * (*vec2)[0] - (*vec1[0]) * (*vec2)[2];
+    (*res)[2] = (*vec1)[0] * (*vec2)[1] - (*vec1[1]) * (*vec2)[0];
+}
+
+void
+pc_matrix_sum(const PCVEC3 *vec1, const PCVEC3 *vec2, PCVEC3 *res)
+{
+    (*res)[0] = (*vec1)[0] + (*vec2)[0];
+    (*res)[1] = (*vec1)[1] + (*vec2)[1];
+    (*res)[2] = (*vec1)[2] + (*vec2)[2];
+}
+
+void
+pc_matrix_scale(const PCVEC3 *vec, double v, PCVEC3 *res)
+{
+    (*res)[0] = (*vec)[0] * v;
+    (*res)[1] = (*vec)[1] * v;
+    (*res)[2] = (*vec)[2] * v;
+}
+
+void
+pc_matrix_rotate_vector(const PCVEC3 *v, double qw, double qx, double qy, double qz, PCVEC3 *res)
+{
+    // v + 2r x (r x v + w x v)
+    PCVEC3 r = {qx, qy, qz};
+    PCVEC3 term1, term2, term3, term4, term5;
+    pc_matrix_scale(v, qw, &term1);
+    pc_matrix_cross_product(&r, v, &term2);
+    pc_matrix_sum(&term2, &term1, &term3);
+    pc_matrix_scale(&r, 2.0, &term4);
+    pc_matrix_cross_product(&term4, &term3, &term5);
+    pc_matrix_sum(v, &term5, res);
+}
