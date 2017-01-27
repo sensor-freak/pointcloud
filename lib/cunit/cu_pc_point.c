@@ -152,11 +152,81 @@ test_point_access()
 
 }
 
+static void
+test_point_rotate_quaternion()
+{
+    PCPOINT *pt;
+    double angle;
+    double qw, qx, qy, qz;
+    double v;
+
+    // π/2 rotation of point (1, 1, 1) around x axis
+    // expected result: (1, -1, 1)
+	pt = pc_point_make(schema);
+    pc_point_set_double_by_name(pt, "x", 1.0);
+    pc_point_set_double_by_name(pt, "y", 1.0);
+    pc_point_set_double_by_name(pt, "z", 1.0);
+    angle = M_PI_2;
+    qw = cos(angle / 2.);
+    qx = sin(angle / 2.);
+    qy = 0;
+    qz = 0;
+    pc_point_rotate_quaternion((PCPOINT *)pt, qw, qx, qy, qz, "x", "y", "z");
+    pc_point_get_double_by_name(pt, "x", &v);
+    CU_ASSERT(v == 1);
+    pc_point_get_double_by_name(pt, "y", &v);
+    CU_ASSERT(v == -1);
+    pc_point_get_double_by_name(pt, "z", &v);
+    CU_ASSERT(v == 1);
+    pc_point_free(pt);
+
+    // π/2 rotation of point (1, 1, 1) around y axis
+    // expected result: (1, 1, -1)
+	pt = pc_point_make(schema);
+    pc_point_set_double_by_name(pt, "x", 1.0);
+    pc_point_set_double_by_name(pt, "y", 1.0);
+    pc_point_set_double_by_name(pt, "z", 1.0);
+    angle = M_PI_2;
+    qw = cos(angle / 2.);
+    qx = 0;
+    qy = sin(angle / 2.);
+    qz = 0;
+    pc_point_rotate_quaternion((PCPOINT *)pt, qw, qx, qy, qz, "x", "y", "z");
+    pc_point_get_double_by_name(pt, "x", &v);
+    CU_ASSERT(v == 1);
+    pc_point_get_double_by_name(pt, "y", &v);
+    CU_ASSERT(v == 1);
+    pc_point_get_double_by_name(pt, "z", &v);
+    CU_ASSERT(v == -1);
+    pc_point_free(pt);
+
+    // π/2 rotation of point (1, 1, 1) around z axis
+    // expected result: (-1, 1, 1)
+	pt = pc_point_make(schema);
+    pc_point_set_double_by_name(pt, "x", 1.0);
+    pc_point_set_double_by_name(pt, "y", 1.0);
+    pc_point_set_double_by_name(pt, "z", 1.0);
+    angle = M_PI_2;
+    qw = cos(angle / 2.);
+    qx = 0;
+    qy = 0;
+    qz = sin(angle / 2.);
+    pc_point_rotate_quaternion((PCPOINT *)pt, qw, qx, qy, qz, "x", "y", "z");
+    pc_point_get_double_by_name(pt, "x", &v);
+    CU_ASSERT(v == -1);
+    pc_point_get_double_by_name(pt, "y", &v);
+    CU_ASSERT(v == 1);
+    pc_point_get_double_by_name(pt, "z", &v);
+    CU_ASSERT(v == 1);
+    pc_point_free(pt);
+}
+
 /* REGISTER ***********************************************************/
 
 CU_TestInfo point_tests[] = {
 	PC_TEST(test_point_hex_inout),
 	PC_TEST(test_point_access),
+    PC_TEST(test_point_rotate_quaternion),
 	CU_TEST_INFO_NULL
 };
 

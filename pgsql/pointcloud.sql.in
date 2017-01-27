@@ -322,6 +322,10 @@ CREATE OR REPLACE FUNCTION PC_RotateQuaternion(p pcpatch, qw float8, qx float8, 
     RETURNS pcpatch AS 'MODULE_PATHNAME', 'pcpatch_rotate_quaternion'
     LANGUAGE 'c' IMMUTABLE STRICT;
 
+CREATE OR REPLACE FUNCTION PC_RotateQuaternion(p pcpoint, qw float8, qx float8, qy float8, qz float8, xdimname text, ydimname text, zdimname text)
+    RETURNS pcpoint AS 'MODULE_PATHNAME', 'pcpoint_rotate_quaternion'
+    LANGUAGE 'c' IMMUTABLE STRICT;
+
 -------------------------------------------------------------------
 --  POINTCLOUD_COLUMNS
 -------------------------------------------------------------------

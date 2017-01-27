@@ -495,6 +495,16 @@ Now that you have created two tables, you'll see entries for them in the `pointc
 >     SELECT PC_RotateQuaternion(pa, cos(angle.value / 2.0), sin(angle.value / 2.0), 0, 0, 'x', 'y', 'z')
 >     FROM patches, angle;
 
+**PC_RotateQuaternion(p pcpoint, qw float8, qx float8, qy float8, qz float8, xdimname text, ydimname text, zdimname text)** returns **pcpoint**
+
+> Rotate a point given a unit quaternion (qw, qx, qy, qz). For example this how to rotate points by π/2 around the x axis:
+>
+>     WITH angle(value) AS (
+>       SELECT pi()/2.0
+>     )
+>     SELECT PC_RotateQuaternion(pt, cos(angle.value / 2.0), sin(angle.value / 2.0), 0, 0, 'x', 'y', 'z')
+>     FROM points, angle;
+
 ## PostGIS Integration ##
 
 The `pointcloud_postgis` extension adds functions that allow you to use PostgreSQL Pointcloud with PostGIS, converting PcPoint and PcPatch to Geometry and doing spatial filtering on point cloud data. The `pointcloud_postgis` extension depends on both the `postgis` and `pointcloud` extensions, so they must be installed first:

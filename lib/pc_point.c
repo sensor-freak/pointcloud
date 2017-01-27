@@ -375,3 +375,52 @@ double * pc_point_to_double_array(const PCPOINT *p)
 
 	return a;
 }
+
+/**
+* Rotate a patch given a unit quaternion.
+*/
+int
+pc_point_rotate_quaternion(
+    const PCPOINT *point,
+    double qw, double qx, double qy, double qz,
+    const char *xdimname, const char *ydimname, const char *zdimname)
+{
+    const PCSCHEMA *schema;
+    const PCDIMENSION *xdim, *ydim, *zdim;
+    const PCMAT33 *qmat;
+    PCVEC3 *vec, *rvec;
+
+    vec = pcalloc(sizeof(PCVEC3));
+    if ( NULL == vec )
+        return PC_FAILURE;
+
+    rvec = pcalloc(sizeof(PCVEC3));
+    if ( NULL == rvec )
+        return PC_FAILURE;
+
+    qmat = pc_matrix_create_from_quaternion(qw, qx, qy, qz);
+    if ( NULL == qmat )
+        return PC_FAILURE;
+
+    schema = point->schema;
+
+    xdim = pc_schema_get_dimension_by_name(schema, xdimname);
+    ydim = pc_schema_get_dimension_by_name(schema, ydimname);
+    zdim = pc_schema_get_dimension_by_name(schema, zdimname);
+
+    pc_point_get_double((PCPOINT *)point, xdim, &(*vec)[0]);
+    pc_point_get_double((PCPOINT *)point, ydim, &(*vec)[1]);
+    pc_point_get_double((PCPOINT *)point, zdim, &(*vec)[2]);
+
+    pc_matrix_multiply_vector(qmat, vec, rvec);
+
+    pc_point_set_double((PCPOINT *)point, xdim, (*rvec)[0]);
+    pc_point_set_double((PCPOINT *)point, ydim, (*rvec)[1]);
+    pc_point_set_double((PCPOINT *)point, zdim, (*rvec)[2]);
+
+    pcfree((void *)qmat);
+    pcfree((void *)rvec);
+    pcfree((void *)vec);
+
+    return PC_SUCCESS;
+}
