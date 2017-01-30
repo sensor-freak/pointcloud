@@ -33,6 +33,10 @@ Make a build directory, and run ``cmake`` from there. Use ``ccmake`` to browse a
 - ``make``
 - ``sudo make install``
 
+Run unit tests:
+
+- ``make check``
+
 #### Autotools ####
 
 After generating the configure script with ``autogen``,  ``./configure --help`` to get a complete listing of configuration options.
@@ -42,6 +46,13 @@ After generating the configure script with ``autogen``,  ``./configure --help`` 
 - ``make``
 - ``sudo make install``
 
+Run unit tests:
+
+- ``make check``
+
+Note that if you configured PointCloud using a non-standard LibGHT location, you may need to add its location to the ``LD_LIBRARY_PATH`` environment variable. For example:
+
+- ``LD_LIBRARY_PATH=$HOME/local/lib make check``
 
 ### Activate ###
 
@@ -452,6 +463,15 @@ Now that you have created two tables, you'll see entries for them in the `pointc
 **PC_PointN(p pcpatch, n int4)** returns **pcpoint**
 
 > Returns the n-th point of the patch with 1-based indexing. Negative n counts point from the end. 
+
+**PC_IsSorted(p pcpatch, dimnames text[], strict boolean default true)** returns **boolean**
+
+> Checks whether a pcpatch is sorted lexicographically along the given dimensions. The `strict` option further checks that the ordering is strict (no duplicates).
+
+**PC_Sort(p pcpatch, dimnames text[])** returns **pcpatch**
+
+> Returns a copy of the input patch lexicographically sorted along the given dimensions.
+
 
 ## PostGIS Integration ##
 
