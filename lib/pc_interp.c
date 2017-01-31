@@ -38,7 +38,7 @@ void * blower_arg(
     size_t lim;
     int cmp;
     const void *p;
-    
+
     if (!num || (*compar)(key, base0, arg)<0) return NULL;
     for (lim = num; lim > 1; lim >>= 1) {
         p = base + (lim >> 1) * size;
@@ -72,7 +72,7 @@ pc_point_uncompressed_interp_ptr(uint8_t *buf, uint8_t *data, uint32_t npoints, 
 
     if(!npoints) return NULL;
     data += byteoffset;
-    
+
     if(sorted) {
         buf0 = (uint8_t *)blower_arg(&v,data,npoints,sz,pc_compare_uncompressed_interp,&interpretation);
         buf1 = buf0 + sz;
@@ -85,7 +85,7 @@ pc_point_uncompressed_interp_ptr(uint8_t *buf, uint8_t *data, uint32_t npoints, 
             pcerror("Interpolated column %s is not strictly increasing",dim->name);
             return NULL;
         }
-        
+
     } else {
         while ( i < npoints )
         {
@@ -140,7 +140,7 @@ pc_point_uncompressed_interp(const PCPATCH_UNCOMPRESSED *pu, PCDIMENSION *dim, d
 }
 
 static PCPATCH_UNCOMPRESSED *
-pc_patch_uncompressed_interp(const PCPATCH_UNCOMPRESSED *pu1, const PCPATCH_UNCOMPRESSED *pu2, 
+pc_patch_uncompressed_interp(const PCPATCH_UNCOMPRESSED *pu1, const PCPATCH_UNCOMPRESSED *pu2,
     PCDIMENSION *dim1, PCDIMENSION *dim2, char sorted1, char sorted2)
 {
     char sorted = sorted1 && sorted2;
@@ -154,7 +154,7 @@ pc_patch_uncompressed_interp(const PCPATCH_UNCOMPRESSED *pu1, const PCPATCH_UNCO
     uint8_t *buf2 = pu2->data+dim2->byteoffset;
     uint8_t *ptr;
     uint32_t npoints1 = pu1->npoints;
-    
+
     for (i=0; i<pu2->npoints;++i)
     {
         value2 = pc_value_from_ptr(buf2,dim2);
@@ -170,11 +170,11 @@ pc_patch_uncompressed_interp(const PCPATCH_UNCOMPRESSED *pu1, const PCPATCH_UNCO
         }
         buf2 += sz2;
     }
-    
+
     if(pa->npoints) return pa;
-    
+
     pc_patch_free((PCPATCH *)pa);
-    return NULL;    
+    return NULL;
 }
 
 PCPOINT *
@@ -236,7 +236,7 @@ PCPATCH *pc_patch_interp(
         pcerror("%s: bounds computation failed", __func__);
         return NULL;
     }
-    
+
     if ( pa && PC_FAILURE == pc_patch_uncompressed_compute_stats(pa) )
     {
         pc_patch_free((PCPATCH *)pa);
