@@ -14,6 +14,7 @@
 #include "pc_api_internal.h"
 //#include <stdint.h>
 #include <assert.h>
+#include <math.h>
 
 int
 pc_compare_uncompressed_interp(const void *a, const void *b, void *arg)
@@ -87,6 +88,10 @@ pc_point_uncompressed_interp_ptr(uint8_t *buf, uint8_t *data, uint32_t npoints, 
         }
 
     } else {
+        // initialize v0 and v1 to prevent "maybe-uninitialized" compile
+        // warnings
+        v0 = INFINITY;
+        v1 = -INFINITY;
         while ( i < npoints )
         {
             vi = pc_double_from_ptr(data,interpretation);
@@ -158,7 +163,8 @@ pc_patch_uncompressed_interp(const PCPATCH_UNCOMPRESSED *pu1, const PCPATCH_UNCO
     for (i=0; i<pu2->npoints;++i)
     {
         value2 = pc_value_from_ptr(buf2,dim2);
-        if(ptr = pc_point_uncompressed_interp_ptr(buf,buf1,npoints1,pu1->schema,dim1,value2,sorted1))
+        ptr = pc_point_uncompressed_interp_ptr(buf,buf1,npoints1,pu1->schema,dim1,value2,sorted1);
+        if ( ptr )
         {
             if(sorted)
             {
