@@ -375,3 +375,37 @@ double * pc_point_to_double_array(const PCPOINT *p)
 
 	return a;
 }
+
+/**
+* Rotate a point in place given a unit quaternion.
+*/
+void
+pc_point_rotate_quaternion(
+    PCPOINT *point,
+    double qw, double qx, double qy, double qz,
+    const char *xdimname, const char *ydimname, const char *zdimname)
+{
+    const PCSCHEMA *schema;
+    const PCDIMENSION *xdim, *ydim, *zdim;
+    PCMAT33 qmat;
+    PCVEC3 vec, rvec;
+
+    pc_matrix_set_from_quaternion(qmat, qw, qx, qy, qz);
+
+    schema = point->schema;
+ 
+    xdim = pc_schema_get_dimension_by_name(schema, xdimname);
+    ydim = pc_schema_get_dimension_by_name(schema, ydimname);
+    zdim = pc_schema_get_dimension_by_name(schema, zdimname);
+
+    pc_point_get_double(point, xdim, &vec[0]);
+    pc_point_get_double(point, ydim, &vec[1]);
+    pc_point_get_double(point, zdim, &vec[2]);
+
+    pc_matrix_multiply_vector(rvec, qmat, vec);
+
+    pc_point_set_double(point, xdim, rvec[0]);
+    pc_point_set_double(point, ydim, rvec[1]);
+    pc_point_set_double(point, zdim, rvec[2]);
+
+}

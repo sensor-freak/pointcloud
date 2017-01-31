@@ -451,4 +451,10 @@ PCPATCH* pc_patch_range(const PCPATCH *pa, int first, int cound);
 /** assign a schema to the patch */
 PCPATCH *pc_patch_set_schema(const PCPATCH *patch, const PCSCHEMA *schema);
 
+/** rotate a patch given a unit quaternion */
+PCPATCH *pc_patch_rotate_quaternion(const PCPATCH *patch, double qw, double qx, double qy, double qz, const char *xdimname, const char *ydimname, const char *zdimname);
+
+/** rotate a point in place given a unit quaternion */
+void pc_point_rotate_quaternion(PCPOINT *point, double qw, double qx, double qy, double qz, const char *xdimname, const char *ydimname, const char *zdimname);
+
 #endif /* _PC_API_H */

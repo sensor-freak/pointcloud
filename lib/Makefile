@@ -6,6 +6,7 @@ LDFLAGS = $(XML2_LDFLAGS) $(ZLIB_LDFLAGS) $(GHT_LDFLASGS)
 CFLAGS += -fPIC
 
 OBJS = \
+	pc_matrix.o \
 	pc_bytes.o \
 	pc_dimstats.o \
 	pc_filter.o \

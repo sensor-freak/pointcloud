@@ -87,6 +87,10 @@ typedef struct
 	uint8_t *map;
 } PCBITMAP;
 
+/* */
+typedef double PCMAT33[9];
+typedef double PCVEC3[3];
+
 
 /** What is the endianness of this system? */
 char machine_endian(void);
@@ -290,7 +294,12 @@ void pc_bitmap_filter(PCBITMAP *map, PC_FILTERTYPE filter, int i, double d, doub
 /** Read indicated bit of bitmap */
 #define pc_bitmap_get(map, i) ((map)->map[(i)])
 
+/****************************************************************************
+* MATRIX
+*/
 
+void pc_matrix_set_from_quaternion(PCMAT33 mat, double qw, double qx, double qy, double qz);
+void pc_matrix_multiply_vector(PCVEC3 rotatedvec, const PCMAT33 mat, const PCVEC3 vec);
 
 #endif /* _PC_API_INTERNAL_H */
 
