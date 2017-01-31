@@ -45,10 +45,10 @@ void * blower_arg(
         cmp = (*compar)(key, p, arg);
         if (cmp == 0)
             return ((void *)p);
-        else if (cmp > 0) {	/* key > p: move right */
+        else if (cmp > 0) { /* key > p: move right */
             base = (char *)p;
             lim++;
-        } 		/* else move left */
+        }       /* else move left */
     }
     return ((void *)base);
 }
@@ -230,19 +230,19 @@ PCPATCH *pc_patch_interp(
     if ( pu2 != p2 )
         pc_patch_free(pu2);
 
-	if ( pa && PC_FAILURE == pc_patch_uncompressed_compute_extent(pa) )
-	{
+    if ( pa && PC_FAILURE == pc_patch_uncompressed_compute_extent(pa) )
+    {
         pc_patch_free((PCPATCH *)pa);
-		pcerror("%s: bounds computation failed", __func__);
-		return NULL;
-	}
-	
-	if ( pa && PC_FAILURE == pc_patch_uncompressed_compute_stats(pa) )
-	{
+        pcerror("%s: bounds computation failed", __func__);
+        return NULL;
+    }
+    
+    if ( pa && PC_FAILURE == pc_patch_uncompressed_compute_stats(pa) )
+    {
         pc_patch_free((PCPATCH *)pa);
-		pcerror("%s: stats computation failed", __func__);
-		return NULL;
-	}
+        pcerror("%s: stats computation failed", __func__);
+        return NULL;
+    }
 
     return (PCPATCH *)pa;
 }
