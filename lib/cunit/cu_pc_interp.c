@@ -12,7 +12,6 @@
 
 static PCSCHEMA *schema = NULL;
 static const char *xmlfile = "data/simple-schema.xml";
-static const double precision = 0.000001;
 
 // SIMPLE SCHEMA
 // int32_t x
