@@ -231,3 +231,17 @@ pc_patch_lazperf_compute_extent(PCPATCH_LAZPERF *patch)
 	PCPATCH_UNCOMPRESSED *pau = pc_patch_uncompressed_from_lazperf(patch);
 	return pc_patch_uncompressed_compute_extent(pau);
 }
+
+PCPOINT *
+pc_patch_lazperf_pointn(const PCPATCH_LAZPERF *patch, int n)
+{
+#ifndef HAVE_LAZPERF
+    pcerror("%s: lazperf support is not enabled", __func__);
+    return NULL;
+#endif
+
+    PCPATCH_UNCOMPRESSED *pau = pc_patch_uncompressed_from_lazperf(patch);
+    PCPOINT *pt = pc_patch_uncompressed_pointn(pau, n);
+    pc_patch_free((PCPATCH*) pau);
+    return pt;
+}
