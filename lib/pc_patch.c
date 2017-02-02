@@ -723,3 +723,61 @@ pc_patch_rotate_quaternion(
 
     return ((PCPATCH *)uncompressed_patch);
 }
+
+/**
+* Translate a patch.
+*/
+PCPATCH *
+pc_patch_translate(
+    const PCPATCH *patch,
+    double tx, double ty, double tz,
+    const char *xdimname, const char *ydimname, const char *zdimname)
+{
+    PCPATCH_UNCOMPRESSED *uncompressed_patch;
+    PCDIMENSION *xdim, *ydim, *zdim;
+    const PCSCHEMA *schema;
+    PCPOINTLIST *pointlist;
+    double x, y, z;
+    size_t i;
+
+    if ( patch->type == PC_NONE )
+    {
+        pointlist = pc_pointlist_from_uncompressed((PCPATCH_UNCOMPRESSED *)patch);
+        uncompressed_patch = pc_patch_uncompressed_from_pointlist(pointlist);
+        pc_pointlist_free(pointlist);
+    }
+    else
+    {
+        uncompressed_patch = (PCPATCH_UNCOMPRESSED *)pc_patch_uncompress(patch);
+    }
+    if ( NULL == uncompressed_patch )
+        return NULL;
+
+    schema = uncompressed_patch->schema;
+
+    xdim = pc_schema_get_dimension_by_name(schema, xdimname);
+    ydim = pc_schema_get_dimension_by_name(schema, ydimname);
+    zdim = pc_schema_get_dimension_by_name(schema, zdimname);
+
+    pointlist = pc_pointlist_from_uncompressed(uncompressed_patch);
+
+    // the points of pointlist include pointers to the uncompressed patch data
+    // block, so updating the points changes the patch payload
+
+    for ( i = 0; i < pointlist->npoints; i++ )
+    {
+        PCPOINT *point = pc_pointlist_get_point(pointlist, i);
+
+        pc_point_get_double(point, xdim, &x);
+        pc_point_get_double(point, ydim, &y);
+        pc_point_get_double(point, zdim, &z);
+
+        pc_point_set_double(point, xdim, x + tx);
+        pc_point_set_double(point, ydim, y + ty);
+        pc_point_set_double(point, zdim, z + tz);
+    }
+
+    pc_pointlist_free(pointlist);
+
+    return ((PCPATCH *)uncompressed_patch);
+}

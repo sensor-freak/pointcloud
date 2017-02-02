@@ -409,3 +409,31 @@ pc_point_rotate_quaternion(
     pc_point_set_double(point, zdim, rvec[2]);
 
 }
+
+/**
+* Translate a point.
+*/
+void
+pc_point_translate(
+    PCPOINT *point,
+    double tx, double ty, double tz,
+    const char *xdimname, const char *ydimname, const char *zdimname)
+{
+    const PCSCHEMA *schema;
+    const PCDIMENSION *xdim, *ydim, *zdim;
+    double x, y, z;
+
+    schema = point->schema;
+
+    xdim = pc_schema_get_dimension_by_name(schema, xdimname);
+    ydim = pc_schema_get_dimension_by_name(schema, ydimname);
+    zdim = pc_schema_get_dimension_by_name(schema, zdimname);
+
+    pc_point_get_double(point, xdim, &x);
+    pc_point_get_double(point, ydim, &y);
+    pc_point_get_double(point, zdim, &z);
+
+    pc_point_set_double(point, xdim, x + tx);
+    pc_point_set_double(point, ydim, y + ty);
+    pc_point_set_double(point, zdim, z + tz);
+}
