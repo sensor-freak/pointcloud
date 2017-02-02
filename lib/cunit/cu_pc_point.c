@@ -220,12 +220,39 @@ test_point_rotate_quaternion()
     pc_point_free(pt);
 }
 
+static void
+test_point_translate()
+{
+    PCPOINT *pt;
+    double tx, ty, tz;
+    double v;
+
+    // translation of point (1, 1, 1) by (-1, 1, 2)
+    // expected result: (0, 2, 3)
+    pt = pc_point_make(schema);
+    pc_point_set_double_by_name(pt, "x", 1.0);
+    pc_point_set_double_by_name(pt, "y", 1.0);
+    pc_point_set_double_by_name(pt, "z", 1.0);
+    tx = -1.0;
+    ty = 1.0;
+    tz = 2.0;
+    pc_point_translate(pt, tx, ty, tz, "x", "y", "z");
+    pc_point_get_double_by_name(pt, "x", &v);
+    CU_ASSERT(v == 0);
+    pc_point_get_double_by_name(pt, "y", &v);
+    CU_ASSERT(v == 2);
+    pc_point_get_double_by_name(pt, "z", &v);
+    CU_ASSERT(v == 3);
+    pc_point_free(pt);
+}
+
 /* REGISTER ***********************************************************/
 
 CU_TestInfo point_tests[] = {
 	PC_TEST(test_point_hex_inout),
 	PC_TEST(test_point_access),
     PC_TEST(test_point_rotate_quaternion),
+    PC_TEST(test_point_translate),
 	CU_TEST_INFO_NULL
 };
 

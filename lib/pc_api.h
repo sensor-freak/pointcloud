@@ -466,4 +466,7 @@ void pc_point_rotate_quaternion(PCPOINT *point, double qw, double qx, double qy,
 /** translate a patch */
 PCPATCH *pc_patch_translate(const PCPATCH *patch, double tx, double ty, double tz, const char *xdimname, const char *ydimname, const char *zdimname);
 
+/** translate a point */
+void pc_point_translate(PCPOINT *point, double tx, double ty, double tz, const char *xdimname, const char *ydimname, const char *zdimname);
+
 #endif /* _PC_API_H */

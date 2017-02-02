@@ -159,3 +159,47 @@ Datum pcpatch_translate(PG_FUNCTION_ARGS)
 
     PG_RETURN_POINTER(serpatch);
 }
+
+/**
+* Translate a point
+* PC_RotateTranslate(point pcpoint, tx float8, ty float8, tz float8,
+*                    xdimname text, ydimname text, zdimname text) returns pcpoint
+*/
+PG_FUNCTION_INFO_V1(pcpoint_translate);
+Datum pcpoint_translate(PG_FUNCTION_ARGS)
+{
+    SERIALIZED_POINT *serpoint;
+    PCPOINT *point;
+    PCSCHEMA *schema;
+    float8 tx, ty, tz;
+    char *xdimname, *ydimname, *zdimname;
+
+    if ( PG_ARGISNULL(0) )
+        PG_RETURN_NULL();   /* returns null if no input values */
+
+    serpoint = PG_GETARG_SERPOINT_P(0);
+    tx = PG_GETARG_FLOAT8(1);
+    ty = PG_GETARG_FLOAT8(2);
+    tz = PG_GETARG_FLOAT8(3);
+    xdimname = text_to_cstring(PG_GETARG_TEXT_P(4));
+    ydimname = text_to_cstring(PG_GETARG_TEXT_P(5));
+    zdimname = text_to_cstring(PG_GETARG_TEXT_P(6));
+
+    schema = pc_schema_from_pcid(serpoint->pcid, fcinfo);
+
+    point = pc_point_deserialize(serpoint, schema);
+    if ( ! point )
+    {
+        elog(ERROR, "failed to deserialize point");
+        PG_RETURN_NULL();
+    }
+
+    pc_point_translate(
+        point, tx, ty, tz, xdimname, ydimname, zdimname);
+
+    serpoint = pc_point_serialize(point);
+
+    pc_point_free(point);
+
+    PG_RETURN_POINTER(serpoint);
+}
