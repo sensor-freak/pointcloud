@@ -181,6 +181,74 @@ Datum pcpatch_affine(PG_FUNCTION_ARGS)
 }
 
 /**
+* Apply an projective transformation to a patch
+* PC_Projective(patch pcpatch,
+*			a float8, b float8, c float8, d float8,
+*			e float8, f float8, g float8, h float8,
+*			i float8, j float8, k float8, l float8,
+*			m float8, n float8, o float8, p float8,
+*			xdimname text, ydimname text, zdimname text) returns pcpatch
+*/
+PG_FUNCTION_INFO_V1(pcpatch_projective);
+Datum pcpatch_projective(PG_FUNCTION_ARGS)
+{
+	SERIALIZED_PATCH *serpatch;
+	PCPATCH *patch_in, *patch_out;
+	PCSCHEMA *schema;
+	float8 a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p;
+	char *xdimname, *ydimname, *zdimname;
+
+	if ( PG_ARGISNULL(0) )
+		PG_RETURN_NULL();	/* returns null if no input values */
+
+	serpatch = PG_GETARG_SERPATCH_P(0);
+	a = PG_GETARG_FLOAT8(1);
+	b = PG_GETARG_FLOAT8(2);
+	c = PG_GETARG_FLOAT8(3);
+	d = PG_GETARG_FLOAT8(4);
+	e = PG_GETARG_FLOAT8(5);
+	f = PG_GETARG_FLOAT8(6);
+	g = PG_GETARG_FLOAT8(7);
+	h = PG_GETARG_FLOAT8(8);
+	i = PG_GETARG_FLOAT8(9);
+	j = PG_GETARG_FLOAT8(10);
+	k = PG_GETARG_FLOAT8(11);
+	l = PG_GETARG_FLOAT8(12);
+	m = PG_GETARG_FLOAT8(13);
+	n = PG_GETARG_FLOAT8(14);
+	o = PG_GETARG_FLOAT8(15);
+	p = PG_GETARG_FLOAT8(16);
+	xdimname = text_to_cstring(PG_GETARG_TEXT_P(17));
+	ydimname = text_to_cstring(PG_GETARG_TEXT_P(18));
+	zdimname = text_to_cstring(PG_GETARG_TEXT_P(19));
+
+	schema = pc_schema_from_pcid(serpatch->pcid, fcinfo);
+
+	patch_in = pc_patch_deserialize(serpatch, schema);
+	if ( ! patch_in )
+	{
+		elog(ERROR, "failed to deserialize patch");
+		PG_RETURN_NULL();
+	}
+
+	patch_out = pc_patch_projective(patch_in,
+		a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p,
+		xdimname, ydimname, zdimname);
+	if ( ! patch_out )
+	{
+		elog(ERROR, "failed to project patch");
+		PG_RETURN_NULL();
+	}
+
+	serpatch = pc_patch_serialize(patch_out, NULL);
+
+	pc_patch_free(patch_in);
+	pc_patch_free(patch_out);
+
+	PG_RETURN_POINTER(serpatch);
+}
+
+/**
 * Rotate a point based on a rotation quaternion
 * PC_RotateQuaternion(point pcpoint, qw float8, qx float8, qy float8, qz float8,
 *					  xdimname text, ydimname text, zdimname text) returns pcpoint

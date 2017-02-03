@@ -44,6 +44,37 @@ pc_matrix_43_set(PCMAT43 mat,
 }
 
 /**
+* Set a 4x4 matrix.
+*/
+void
+pc_matrix_44_set(PCMAT44 mat,
+		double a, double b, double c, double d,
+		double e, double f, double g, double h,
+		double i, double j, double k, double l,
+		double m, double n, double o, double p)
+{
+	mat[0] = a;
+	mat[1] = b;
+	mat[2] = c;
+	mat[3] = d;
+
+	mat[4] = e;
+	mat[5] = f;
+	mat[6] = g;
+	mat[7] = h;
+
+	mat[8] = i;
+	mat[9] = j;
+	mat[10] = k;
+	mat[11] = l;
+
+	mat[12] = m;
+	mat[13] = n;
+	mat[14] = o;
+	mat[15] = p;
+}
+
+/**
 * Sets the 3x3 matrix mat associated to the (qw, qx, qy, qz) quaternion. Assume
 * that the quaternion is a unit quaternion.
 */
@@ -102,4 +133,30 @@ pc_matrix_43_transform_affine(PCVEC3 res, const PCMAT43 mat, const PCVEC3 vec)
 		+ mat[6] * vec[2] + mat[7];
 	res[2] = mat[8] * vec[0] + mat[9] * vec[1]
 		+ mat[10] * vec[2] + mat[11];
+}
+
+/**
+* Apply a projective transformation to the vector vec and store the resulting
+* vector in res.
+*/
+void
+pc_matrix_44_transform_projective(PCVEC3 res, const PCMAT44 mat, const PCVEC3 vec)
+{
+	double k;
+	k = mat[12] * vec[0] + mat[13] * vec[1]
+		+ mat[14] * vec[2] + mat[15];
+	if ( k == 0 )
+	{
+		pcerror("%s: the homogeneous component is 0", __func__);
+		res[0] = res[1] = res[2] = NAN;
+	}
+	else
+	{
+		res[0] = (mat[0] * vec[0] + mat[1] * vec[1]
+			+ mat[2] * vec[2] + mat[3]) / k;
+		res[1] = (mat[4] * vec[0] + mat[5] * vec[1]
+			+ mat[6] * vec[2] + mat[7]) / k;
+		res[2] = (mat[8] * vec[0] + mat[9] * vec[1]
+			+ mat[10] * vec[2] + mat[11]) / k;
+	}
 }
