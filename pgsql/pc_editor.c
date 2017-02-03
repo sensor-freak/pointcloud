@@ -227,8 +227,8 @@ Datum pcpoint_rotate_quaternion(PG_FUNCTION_ARGS)
 
 /**
 * Translate a point
-* PC_RotateTranslate(point pcpoint, tx float8, ty float8, tz float8,
-*                    xdimname text, ydimname text, zdimname text) returns pcpoint
+* PC_Translate(point pcpoint, tx float8, ty float8, tz float8,
+*              xdimname text, ydimname text, zdimname text) returns pcpoint
 */
 PG_FUNCTION_INFO_V1(pcpoint_translate);
 Datum pcpoint_translate(PG_FUNCTION_ARGS)
