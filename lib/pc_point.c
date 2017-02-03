@@ -437,3 +437,39 @@ pc_point_translate(
     pc_point_set_double(point, ydim, y + ty);
     pc_point_set_double(point, zdim, z + tz);
 }
+
+/**
+* Apply an affine transformation to a point.
+*/
+void
+pc_point_affine(
+    PCPOINT *point,
+    double a, double b, double c,
+    double d, double e, double f,
+    double g, double h, double i,
+    double xoff, double yoff, double zoff,
+    const char *xdimname, const char *ydimname, const char *zdimname)
+{
+    const PCSCHEMA *schema;
+    const PCDIMENSION *xdim, *ydim, *zdim;
+    PCMAT43 amat;
+    PCVEC3 vec, rvec;
+
+    pc_matrix_set_affine(amat, a, b, c, d, e, f, g, h, i, xoff, yoff, zoff);
+
+    schema = point->schema;
+
+    xdim = pc_schema_get_dimension_by_name(schema, xdimname);
+    ydim = pc_schema_get_dimension_by_name(schema, ydimname);
+    zdim = pc_schema_get_dimension_by_name(schema, zdimname);
+
+    pc_point_get_double(point, xdim, &vec[0]);
+    pc_point_get_double(point, ydim, &vec[1]);
+    pc_point_get_double(point, zdim, &vec[2]);
+
+    pc_matrix_transform_affine(rvec, amat, vec);
+
+    pc_point_set_double(point, xdim, rvec[0]);
+    pc_point_set_double(point, ydim, rvec[1]);
+    pc_point_set_double(point, zdim, rvec[2]);
+}

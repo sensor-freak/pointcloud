@@ -246,6 +246,44 @@ test_point_translate()
     pc_point_free(pt);
 }
 
+static void
+test_point_affine()
+{
+    PCPOINT *pt;
+    double a, b, c, d, e, f, g, h, i;
+    double xoff, yoff, zoff;
+    double v;
+
+    // scale + translate
+	pt = pc_point_make(schema);
+    pc_point_set_double_by_name(pt, "x", 1.0);
+    pc_point_set_double_by_name(pt, "y", 1.0);
+    pc_point_set_double_by_name(pt, "z", 1.0);
+    a = 2;
+    b = 0;
+    c = 0;
+    d = 0;
+    e = 2;
+    f = 0;
+    g = 0;
+    h = 0;
+    i = 2;
+    xoff = 1;
+    yoff = 1;
+    zoff = 1;
+    pc_point_affine(
+            pt,
+            a, b, c, d, e, f, g, h, i, xoff, yoff, zoff,
+            "x", "y", "z");
+    pc_point_get_double_by_name(pt, "x", &v);
+    CU_ASSERT(v == 3);
+    pc_point_get_double_by_name(pt, "y", &v);
+    CU_ASSERT(v == 3);
+    pc_point_get_double_by_name(pt, "z", &v);
+    CU_ASSERT(v == 3);
+    pc_point_free(pt);
+}
+
 /* REGISTER ***********************************************************/
 
 CU_TestInfo point_tests[] = {
@@ -253,6 +291,7 @@ CU_TestInfo point_tests[] = {
 	PC_TEST(test_point_access),
     PC_TEST(test_point_rotate_quaternion),
     PC_TEST(test_point_translate),
+    PC_TEST(test_point_affine),
 	CU_TEST_INFO_NULL
 };
 
