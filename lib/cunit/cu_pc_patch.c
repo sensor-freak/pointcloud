@@ -1365,6 +1365,114 @@ test_patch_translate_compression_ght()
 }
 #endif  /* HAVE_LIBGHT */
 
+static void
+test_patch_affine_compression_none()
+{
+    PCPATCH *patch;
+    PCPATCH_UNCOMPRESSED *patch_uncompressed;
+    PCPOINTLIST *pl;
+    PCPOINT *pt;
+    double a, b, c, d, e, f, g, h, i;
+    double xoff, yoff, zoff;
+    double v;
+
+    // (1, 1, 1) is the point we're going to transform
+    pl = pc_pointlist_make(1);
+    pt = pc_point_make(simplexyzschema);
+    pc_point_set_double_by_name(pt, "x", 1.0);
+    pc_point_set_double_by_name(pt, "y", 1.0);
+    pc_point_set_double_by_name(pt, "z", 1.0);
+    pc_pointlist_add_point(pl, pt);
+
+    // scale + translate
+    patch_uncompressed = pc_patch_uncompressed_from_pointlist(pl);
+    a = 2;
+    b = 0;
+    c = 0;
+    d = 0;
+    e = 2;
+    f = 0;
+    g = 0;
+    h = 0;
+    i = 2;
+    xoff = 1;
+    yoff = 1;
+    zoff = 1;
+    patch = pc_patch_affine(
+            (PCPATCH *)patch_uncompressed,
+            a, b, c, d, e, f, g, h, i, xoff, yoff, zoff,
+            "x", "y", "z");
+    CU_ASSERT(patch != NULL);
+    pt = pc_patch_pointn(patch, 1);
+    CU_ASSERT(pt != NULL);
+    pc_point_get_double_by_name(pt, "x", &v);
+    CU_ASSERT(v == 3);
+    pc_point_get_double_by_name(pt, "y", &v);
+    CU_ASSERT(v == 3);
+    pc_point_get_double_by_name(pt, "z", &v);
+    CU_ASSERT(v == 3);
+    pc_point_free(pt);
+    pc_patch_free(patch);
+    pc_patch_free((PCPATCH*)patch_uncompressed);
+
+    pc_pointlist_free(pl);
+}
+
+#ifdef HAVE_LIBGHT
+static void
+test_patch_affine_compression_ght()
+{
+    PCPATCH *patch;
+    PCPATCH_GHT *patch_ght;
+    PCPOINTLIST *pl;
+    PCPOINT *pt;
+    double a, b, c, d, e, f, g, h, i;
+    double xoff, yoff, zoff;
+    double v;
+
+    // (1, 1, 1) is the point we're going to transform
+    pl = pc_pointlist_make(1);
+    pt = pc_point_make(simplexyzschema);
+    pc_point_set_double_by_name(pt, "x", 1.0);
+    pc_point_set_double_by_name(pt, "y", 1.0);
+    pc_point_set_double_by_name(pt, "z", 1.0);
+    pc_pointlist_add_point(pl, pt);
+
+    // scale + translate
+    patch_ght = pc_patch_ght_from_pointlist(pl);
+    a = 2;
+    b = 0;
+    c = 0;
+    d = 0;
+    e = 2;
+    f = 0;
+    g = 0;
+    h = 0;
+    i = 2;
+    xoff = 1;
+    yoff = 1;
+    zoff = 1;
+    patch = pc_patch_affine(
+            (PCPATCH *)patch_ght,
+            a, b, c, d, e, f, g, h, i, xoff, yoff, zoff,
+            "x", "y", "z");
+    CU_ASSERT(patch != NULL);
+    pt = pc_patch_pointn(patch, 1);
+    CU_ASSERT(pt != NULL);
+    pc_point_get_double_by_name(pt, "x", &v);
+    CU_ASSERT(v == 3);
+    pc_point_get_double_by_name(pt, "y", &v);
+    CU_ASSERT(v == 3);
+    pc_point_get_double_by_name(pt, "z", &v);
+    CU_ASSERT(v == 3);
+    pc_point_free(pt);
+    pc_patch_free(patch);
+    pc_patch_free((PCPATCH*)patch_ght);
+
+    pc_pointlist_free(pl);
+}
+#endif  /* HAVE_LIBGHT */
+
 /* REGISTER ***********************************************************/
 
 CU_TestInfo patch_tests[] = {
@@ -1409,6 +1517,10 @@ CU_TestInfo patch_tests[] = {
     PC_TEST(test_patch_translate_compression_none),
 #ifdef HAVE_LIBGHT
     PC_TEST(test_patch_translate_compression_ght),
+#endif
+    PC_TEST(test_patch_affine_compression_none),
+#ifdef HAVE_LIBGHT
+    PC_TEST(test_patch_affine_compression_ght),
 #endif
 	CU_TEST_INFO_NULL
 };

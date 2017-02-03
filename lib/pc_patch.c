@@ -781,3 +781,69 @@ pc_patch_translate(
 
     return ((PCPATCH *)uncompressed_patch);
 }
+
+/**
+* Apply an affine transformation to a patch.
+*/
+PCPATCH *
+pc_patch_affine(
+    const PCPATCH *patch,
+    double a, double b, double c,
+    double d, double e, double f,
+    double g, double h, double i,
+    double xoff, double yoff, double zoff,
+    const char *xdimname, const char *ydimname, const char *zdimname)
+{
+    PCPATCH_UNCOMPRESSED *uncompressed_patch;
+    PCDIMENSION *xdim, *ydim, *zdim;
+    const PCSCHEMA *schema;
+    PCPOINTLIST *pointlist;
+    PCMAT43 amat;
+    PCVEC3 vec, rvec;
+    size_t idx;
+
+    pc_matrix_set_affine(amat, a, b, c, d, e, f, g, h, i, xoff, yoff, zoff);
+
+    if ( patch->type == PC_NONE )
+    {
+        pointlist = pc_pointlist_from_uncompressed((PCPATCH_UNCOMPRESSED *)patch);
+        uncompressed_patch = pc_patch_uncompressed_from_pointlist(pointlist);
+        pc_pointlist_free(pointlist);
+    }
+    else
+    {
+        uncompressed_patch = (PCPATCH_UNCOMPRESSED *)pc_patch_uncompress(patch);
+    }
+    if ( NULL == uncompressed_patch )
+        return NULL;
+
+    schema = uncompressed_patch->schema;
+
+    xdim = pc_schema_get_dimension_by_name(schema, xdimname);
+    ydim = pc_schema_get_dimension_by_name(schema, ydimname);
+    zdim = pc_schema_get_dimension_by_name(schema, zdimname);
+
+    pointlist = pc_pointlist_from_uncompressed(uncompressed_patch);
+
+    // the points of pointlist include pointers to the uncompressed patch data
+    // block, so updating the points changes the patch payload
+
+    for ( idx = 0; idx < pointlist->npoints; idx++ )
+    {
+        PCPOINT *point = pc_pointlist_get_point(pointlist, idx);
+
+        pc_point_get_double(point, xdim, &vec[0]);
+        pc_point_get_double(point, ydim, &vec[1]);
+        pc_point_get_double(point, zdim, &vec[2]);
+
+        pc_matrix_transform_affine(rvec, amat, vec);
+
+        pc_point_set_double(point, xdim, rvec[0]);
+        pc_point_set_double(point, ydim, rvec[1]);
+        pc_point_set_double(point, zdim, rvec[2]);
+    }
+
+    pc_pointlist_free(pointlist);
+
+    return ((PCPATCH *)uncompressed_patch);
+}

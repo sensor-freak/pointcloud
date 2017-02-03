@@ -469,4 +469,7 @@ PCPATCH *pc_patch_translate(const PCPATCH *patch, double tx, double ty, double t
 /** translate a point */
 void pc_point_translate(PCPOINT *point, double tx, double ty, double tz, const char *xdimname, const char *ydimname, const char *zdimname);
 
+/** apply an affine transformation to a patch */
+PCPATCH *pc_patch_affine(const PCPATCH *patch, double a, double b, double c, double d, double e, double f, double g, double h, double i, double xoff, double yoff, double zoff, const char *xdimname, const char *ydimname, const char *zdimname);
+
 #endif /* _PC_API_H */
