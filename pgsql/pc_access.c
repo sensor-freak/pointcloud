@@ -9,7 +9,7 @@
 *
 ***********************************************************************/
 
-#include "pc_pgsql.h"      /* Common PgSQL support for our type */
+#include "pc_pgsql.h"	   /* Common PgSQL support for our type */
 #include "utils/numeric.h"
 #include "funcapi.h"
 #include "lib/stringinfo.h"
@@ -368,7 +368,7 @@ Datum pointcloud_agg_transfn(PG_FUNCTION_ARGS)
 	{
 		/* cannot be called directly because of dummy-type argument */
 		elog(ERROR, "pointcloud_agg_transfn called in non-aggregate context");
-		aggcontext = NULL;  /* keep compiler quiet */
+		aggcontext = NULL;	/* keep compiler quiet */
 	}
 
 	if ( PG_ARGISNULL(0) )
@@ -414,7 +414,7 @@ Datum pcpoint_agg_final_array(PG_FUNCTION_ARGS)
 	Datum result = 0;
 
 	if (PG_ARGISNULL(0))
-		PG_RETURN_NULL();   /* returns null iff no input values */
+		PG_RETURN_NULL();	/* returns null iff no input values */
 
 	a = (abs_trans*) PG_GETARG_POINTER(0);
 
@@ -430,7 +430,7 @@ Datum pcpatch_agg_final_array(PG_FUNCTION_ARGS)
 	Datum result = 0;
 
 	if (PG_ARGISNULL(0))
-		PG_RETURN_NULL();   /* returns null iff no input values */
+		PG_RETURN_NULL();	/* returns null iff no input values */
 
 	a = (abs_trans*) PG_GETARG_POINTER(0);
 
@@ -448,7 +448,7 @@ Datum pcpoint_agg_final_pcpatch(PG_FUNCTION_ARGS)
 	SERIALIZED_PATCH *serpa;
 
 	if (PG_ARGISNULL(0))
-		PG_RETURN_NULL();   /* returns null iff no input values */
+		PG_RETURN_NULL();	/* returns null iff no input values */
 
 	a = (abs_trans*) PG_GETARG_POINTER(0);
 
@@ -472,7 +472,7 @@ Datum pcpatch_agg_final_pcpatch(PG_FUNCTION_ARGS)
 	SERIALIZED_PATCH *serpa;
 
 	if (PG_ARGISNULL(0))
-		PG_RETURN_NULL();   /* returns null iff no input values */
+		PG_RETURN_NULL();	/* returns null iff no input values */
 
 	a = (abs_trans*) PG_GETARG_POINTER(0);
 
@@ -519,7 +519,7 @@ Datum pcpatch_unnest(PG_FUNCTION_ARGS)
 		* Get the patch value and detoast if needed.  We can't do this
 		* earlier because if we have to detoast, we want the detoasted copy
 		* to be in multi_call_memory_ctx, so it will go away when we're done
-		* and not before.      (If no detoast happens, we assume the originally
+		* and not before.	   (If no detoast happens, we assume the originally
 		* passed array will stick around till then.)
 		*/
 		serpatch = PG_GETARG_SERPATCH_P(0);
@@ -749,8 +749,8 @@ Datum pcpatch_summary(PG_FUNCTION_ARGS)
 	{
 		/* need full data to inspect per-dimension compression */
 		/* NOTE: memory usage could be optimized to only fetch slices
-		 *       at specific offsets, but doesn't seem worth at this time
-		 *       See https://github.com/pgpointcloud/pointcloud/pull/51#issuecomment-83592363
+		 *		 at specific offsets, but doesn't seem worth at this time
+		 *		 See https://github.com/pgpointcloud/pointcloud/pull/51#issuecomment-83592363
 		 */
 		serpa = PG_GETARG_SERPATCH_P(0);
 		patch = pc_patch_deserialize(serpa, schema);
@@ -1128,24 +1128,23 @@ Datum pcpoint_interp(PG_FUNCTION_ARGS)
 	bool sorted = PG_GETARG_BOOL(3);
 	PCPATCH *patch = NULL;
 	PCPOINT *pt = NULL;
-	SERIALIZED_POINT *serpt = NULL;	
+	SERIALIZED_POINT *serpt = NULL;
 
 	patch = pc_patch_deserialize(serpatch, schema);
-	if(patch) pt = pc_point_interp(patch,dim_name,value,sorted);	
+	if(patch) pt = pc_point_interp(patch,dim_name,value,sorted);
 
 	pfree(dim_name);
 	if(patch) pc_patch_free(patch);
-	PG_FREE_IF_COPY(serpatch, 0);	
+	PG_FREE_IF_COPY(serpatch, 0);
 
-	if(!pt) PG_RETURN_NULL();	
+	if(!pt) PG_RETURN_NULL();
 
 	serpt = pc_point_serialize(pt);
 	pc_point_free(pt);
 	PG_RETURN_POINTER(serpt);
 }
 
-/** PC_Interpolate(patch1 pcpatch, patch2 pcpatch, dimname1 text, dimname2 text,
- *			sorted1 bool, sorted2 bool) returns PcPatch */
+/** PC_Interpolate(patch1 pcpatch, patch2 pcpatch, dimname1 text, dimname2 text	sorted1 bool, sorted2 bool) returns PcPatch */
 PG_FUNCTION_INFO_V1(pcpatch_interp);
 Datum pcpatch_interp(PG_FUNCTION_ARGS)
 {
@@ -1154,46 +1153,46 @@ Datum pcpatch_interp(PG_FUNCTION_ARGS)
 	char *dim_name1, *dim_name2;
 	bool sorted1, sorted2;
 	PCPATCH *p1, *p2, *pa;
-	
+
 
 	if(PG_ARGISNULL(0) || PG_ARGISNULL(1) || PG_ARGISNULL(2))
-		PG_RETURN_NULL();	
+		PG_RETURN_NULL();
 
 	serpatch1 = PG_GETARG_SERPATCH_P(0);
 	serpatch2 = PG_GETARG_SERPATCH_P(1);
-        schema1 = pc_schema_from_pcid(serpatch1->pcid, fcinfo);
+		schema1 = pc_schema_from_pcid(serpatch1->pcid, fcinfo);
 	p1 = pc_patch_deserialize(serpatch1, schema1);
-	if(!p1) 
+	if(!p1)
 	{
-            elog(ERROR, "failed to deserialize patch");
-            PG_RETURN_NULL();
+			elog(ERROR, "failed to deserialize patch");
+			PG_RETURN_NULL();
 	}
-        schema2 = pc_schema_from_pcid(serpatch2->pcid, fcinfo);
+		schema2 = pc_schema_from_pcid(serpatch2->pcid, fcinfo);
 	p2 = pc_patch_deserialize(serpatch2, schema2);
-	if(!p2) 
+	if(!p2)
 	{
-            pc_patch_free(p1);
-            elog(ERROR, "failed to deserialize patch");
-            PG_RETURN_NULL();
+			pc_patch_free(p1);
+			elog(ERROR, "failed to deserialize patch");
+			PG_RETURN_NULL();
 	}
-	
+
 	PG_FREE_IF_COPY(serpatch1, 0);
 	PG_FREE_IF_COPY(serpatch2, 1);
 	dim_name1 = text_to_cstring(PG_GETARG_TEXT_P(2));
 	dim_name2 = text_to_cstring(PG_GETARG_TEXT_P(PG_ARGISNULL(3) ? 2 : 3));
 	sorted1 = PG_GETARG_BOOL(4);
-	sorted2 = PG_GETARG_BOOL(5);	
+	sorted2 = PG_GETARG_BOOL(5);
 
 
-        pa = pc_patch_interp(p1,p2,dim_name1,dim_name2,sorted1,sorted2);
-    
-        pc_patch_free(p1);
-        pc_patch_free(p2);
-        pfree(dim_name1);
-        pfree(dim_name2);
-	
+		pa = pc_patch_interp(p1,p2,dim_name1,dim_name2,sorted1,sorted2);
+
+		pc_patch_free(p1);
+		pc_patch_free(p2);
+		pfree(dim_name1);
+		pfree(dim_name2);
+
 	if(!pa) PG_RETURN_NULL();
-	
+
 	serpatch = pc_patch_serialize(pa,NULL);
 	pc_patch_free(pa);
 	PG_RETURN_POINTER(serpatch);
