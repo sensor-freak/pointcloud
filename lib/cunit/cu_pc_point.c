@@ -386,6 +386,63 @@ test_point_affine_with_dimension_names()
 	pc_point_free(pt);
 }
 
+static void
+test_point_projective()
+{
+	PCPOINT *pt;
+	double v;
+
+	// simple perspective projection which uses the origin as the center
+	// of the projection, and z = 1 as the image plane
+	pt = pc_point_make(schema);
+	pc_point_set_x(pt, 1.0);
+	pc_point_set_y(pt, 1.0);
+	pc_point_set_z(pt, -2.0);
+	pc_point_projective(pt,
+			1, 0, 0, 0,
+			0, 1, 0, 0,
+			0, 0, 1, 0,
+			0, 0, 1, 0,
+			NULL, NULL, NULL);
+	v = pc_point_get_x(pt);
+	CU_ASSERT(v == -0.5);
+	v = pc_point_get_y(pt);
+	CU_ASSERT(v == -0.5);
+	v = pc_point_get_z(pt);
+	CU_ASSERT(v == 1);
+	pc_point_free(pt);
+}
+
+static void
+test_point_projective_with_dimension_names()
+{
+	PCPOINT *pt;
+	double v;
+
+	// this is the same test as test_point_projective, but explict
+	// dimension names are passed to pc_point_projective
+
+	// simple perspective projection which uses the origin as the center
+	// of the projection, and z = 1 as the image plane
+	pt = pc_point_make(schema);
+	pc_point_set_double_by_name(pt, "x", 1.0);
+	pc_point_set_double_by_name(pt, "y", 1.0);
+	pc_point_set_double_by_name(pt, "z", -2.0);
+	pc_point_projective(pt,
+			1, 0, 0, 0,
+			0, 1, 0, 0,
+			0, 0, 1, 0,
+			0, 0, 1, 0,
+			"x", "y", "z");
+	pc_point_get_double_by_name(pt, "x", &v);
+	CU_ASSERT(v == -0.5);
+	pc_point_get_double_by_name(pt, "y", &v);
+	CU_ASSERT(v == -0.5);
+	pc_point_get_double_by_name(pt, "z", &v);
+	CU_ASSERT(v == 1);
+	pc_point_free(pt);
+}
+
 /* REGISTER ***********************************************************/
 
 CU_TestInfo point_tests[] = {
@@ -397,6 +454,8 @@ CU_TestInfo point_tests[] = {
 	PC_TEST(test_point_translate_with_dimension_names),
 	PC_TEST(test_point_affine),
 	PC_TEST(test_point_affine_with_dimension_names),
+	PC_TEST(test_point_projective),
+	PC_TEST(test_point_projective_with_dimension_names),
 	CU_TEST_INFO_NULL
 };
 

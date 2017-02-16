@@ -494,4 +494,8 @@ void pc_point_affine(PCPOINT *point, double a, double b, double c, double d, dou
 /** apply a projective transformation to a patch */
 PCPATCH *pc_patch_projective(const PCPATCH *patch, double a, double b, double c, double d, double e, double f, double g, double h, double i, double j, double k, double l, double m, double n, double o, double p, const char *xdimname, const char *ydimname, const char *zdimname);
 
+/** apply a projective transformation to a point */
+void pc_point_projective(PCPOINT *point, double a, double b, double c, double d, double e, double f, double g, double h, double i, double j, double k, double l, double m, double n, double o, double p, const char *xdimname, const char *ydimname, const char *zdimname);
+
+
 #endif /* _PC_API_H */

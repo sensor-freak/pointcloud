@@ -395,3 +395,65 @@ Datum pcpoint_affine(PG_FUNCTION_ARGS)
 
 	PG_RETURN_POINTER(serpoint);
 }
+
+/**
+* Apply an projective transformation to a point
+* PC_Projective(patch pcpoint,
+*			a float8, b float8, c float8, d float8,
+*			e float8, f float8, g float8, h float8,
+*			i float8, j float8, k float8, l float8,
+*			m float8, n float8, o float8, p float8,
+*			xdimname text, ydimname text, zdimname text) returns pcpoint
+*/
+PG_FUNCTION_INFO_V1(pcpoint_projective);
+Datum pcpoint_projective(PG_FUNCTION_ARGS)
+{
+	SERIALIZED_POINT *serpoint;
+	PCPOINT *point;
+	PCSCHEMA *schema;
+	float8 a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p;
+	char *xdimname, *ydimname, *zdimname;
+
+	if ( PG_ARGISNULL(0) )
+		PG_RETURN_NULL();	/* returns null if no input values */
+
+	serpoint = PG_GETARG_SERPOINT_P(0);
+	a = PG_GETARG_FLOAT8(1);
+	b = PG_GETARG_FLOAT8(2);
+	c = PG_GETARG_FLOAT8(3);
+	d = PG_GETARG_FLOAT8(4);
+	e = PG_GETARG_FLOAT8(5);
+	f = PG_GETARG_FLOAT8(6);
+	g = PG_GETARG_FLOAT8(7);
+	h = PG_GETARG_FLOAT8(8);
+	i = PG_GETARG_FLOAT8(9);
+	j = PG_GETARG_FLOAT8(10);
+	k = PG_GETARG_FLOAT8(11);
+	l = PG_GETARG_FLOAT8(12);
+	m = PG_GETARG_FLOAT8(13);
+	n = PG_GETARG_FLOAT8(14);
+	o = PG_GETARG_FLOAT8(15);
+	p = PG_GETARG_FLOAT8(16);
+	xdimname = text_to_cstring(PG_GETARG_TEXT_P(17));
+	ydimname = text_to_cstring(PG_GETARG_TEXT_P(18));
+	zdimname = text_to_cstring(PG_GETARG_TEXT_P(19));
+
+	schema = pc_schema_from_pcid(serpoint->pcid, fcinfo);
+
+	point = pc_point_deserialize(serpoint, schema);
+	if ( ! point )
+	{
+		elog(ERROR, "failed to deserialize point");
+		PG_RETURN_NULL();
+	}
+
+	pc_point_projective(point,
+		a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p,
+		xdimname, ydimname, zdimname);
+
+	serpoint = pc_point_serialize(point);
+
+	pc_point_free(point);
+
+	PG_RETURN_POINTER(serpoint);
+}
