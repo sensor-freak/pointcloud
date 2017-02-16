@@ -51,7 +51,7 @@ enum COMPRESSIONS
 enum ENDIANS
 {
 	PC_XDR = 0,   /* Big */
-	PC_NDR = 1    /* Little */
+	PC_NDR = 1	  /* Little */
 };
 
 typedef enum
@@ -83,11 +83,11 @@ typedef struct
 
 typedef struct
 {
-	uint32_t pcid;        /* Unique ID for schema */
-	uint32_t ndims;       /* How many dimensions does this schema have? */
-	size_t size;          /* How wide (bytes) is a point with this schema? */
+	uint32_t pcid;		  /* Unique ID for schema */
+	uint32_t ndims;		  /* How many dimensions does this schema have? */
+	size_t size;		  /* How wide (bytes) is a point with this schema? */
 	PCDIMENSION **dims;   /* Array of dimension pointers */
-	uint32_t srid;        /* Foreign key reference to SPATIAL_REF_SYS */
+	uint32_t srid;		  /* Foreign key reference to SPATIAL_REF_SYS */
 	int32_t x_position;  /* What entry is the x coordinate at? */
 	int32_t y_position;  /* What entry is the y coordinate at? */
 	uint32_t compression; /* Compression type applied to the data */
@@ -449,9 +449,9 @@ PCPOINT *pc_point_interp(const PCPATCH *pa, const char *name, double value, char
 
 /** optimized PC_Patch(PC_Interpolate(p1,attr1,PC_Get(pt2,attr2), sorted1)) from PC_explode(p2) as pt2 */
 PCPATCH *pc_patch_interp(
-    const PCPATCH *p1, const PCPATCH *p2,
-    const char *name1, const char *name2,
-    char sorted1, char sorted2);
+	const PCPATCH *p1, const PCPATCH *p2,
+	const char *name1, const char *name2,
+	char sorted1, char sorted2);
 
 /** Subset batch based on index */
 PCPATCH* pc_patch_range(const PCPATCH *pa, int first, int cound);
