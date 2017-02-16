@@ -678,7 +678,7 @@ pc_patch_rotate_quaternion(
 	PCVEC3 vec, rvec;
 	size_t i;
 
-	pc_matrix_set_from_quaternion(qmat, qw, qx, qy, qz);
+	pc_matrix_33_set_from_quaternion(qmat, qw, qx, qy, qz);
 
 	if ( patch->type == PC_NONE )
 	{
@@ -712,7 +712,7 @@ pc_patch_rotate_quaternion(
 		pc_point_get_double(point, ydim, &vec[1]);
 		pc_point_get_double(point, zdim, &vec[2]);
 
-		pc_matrix_multiply_vector(rvec, qmat, vec);
+		pc_matrix_33_multiply_vector(rvec, qmat, vec);
 
 		pc_point_set_double(point, xdim, rvec[0]);
 		pc_point_set_double(point, ydim, rvec[1]);
@@ -802,7 +802,7 @@ pc_patch_affine(
 	PCVEC3 vec, rvec;
 	size_t idx;
 
-	pc_matrix_set_affine(amat, a, b, c, d, e, f, g, h, i, xoff, yoff, zoff);
+	pc_matrix_43_set(amat, a, b, c, xoff, d, e, f, yoff, g, h, i, zoff);
 
 	if ( patch->type == PC_NONE )
 	{
@@ -836,7 +836,7 @@ pc_patch_affine(
 		pc_point_get_double(point, ydim, &vec[1]);
 		pc_point_get_double(point, zdim, &vec[2]);
 
-		pc_matrix_transform_affine(rvec, amat, vec);
+		pc_matrix_43_transform_affine(rvec, amat, vec);
 
 		pc_point_set_double(point, xdim, rvec[0]);
 		pc_point_set_double(point, ydim, rvec[1]);

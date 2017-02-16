@@ -17,12 +17,39 @@
 #include <string.h>
 #include <math.h>
 
+
+/**
+* Set a 4x3 matrix (4 columns, 3 lines)
+*/
+void
+pc_matrix_43_set(PCMAT43 mat,
+		double a, double b, double c, double d,
+		double e, double f, double g, double h,
+		double i, double j, double k, double l)
+{
+	mat[0] = a;
+	mat[1] = b;
+	mat[2] = c;
+	mat[3] = d;
+
+	mat[4] = e;
+	mat[5] = f;
+	mat[6] = g;
+	mat[7] = h;
+
+	mat[8] = i;
+	mat[9] = j;
+	mat[10] = k;
+	mat[11] = l;
+}
+
 /**
 * Sets the 3x3 matrix mat associated to the (qw, qx, qy, qz) quaternion. Assume
 * that the quaternion is a unit quaternion.
 */
 void
-pc_matrix_set_from_quaternion(PCMAT33 mat, double qw, double qx, double qy, double qz)
+pc_matrix_33_set_from_quaternion(PCMAT33 mat,
+		double qw, double qx, double qy, double qz)
 {
 	double x = qx+qx;
 	double y = qy+qy;
@@ -51,34 +78,11 @@ pc_matrix_set_from_quaternion(PCMAT33 mat, double qw, double qx, double qy, doub
 	mat[8] = 1 - ( xx + yy );
 }
 
-void
-pc_matrix_set_affine(PCMAT43 mat,
-		double a, double b, double c,
-		double d, double e, double f,
-		double g, double h, double i,
-		double xoff, double yoff, double zoff)
-{
-	mat[0] = a;
-	mat[1] = b;
-	mat[2] = c;
-	mat[3] = xoff;
-
-	mat[4] = d;
-	mat[5] = e;
-	mat[6] = f;
-	mat[7] = yoff;
-
-	mat[8] = g;
-	mat[9] = h;
-	mat[10] = i;
-	mat[11] = zoff;
-}
-
 /**
 * Multiply mat by vec and store the resuting vector in res.
 */
 void
-pc_matrix_multiply_vector(PCVEC3 res, const PCMAT33 mat, const PCVEC3 vec)
+pc_matrix_33_multiply_vector(PCVEC3 res, const PCMAT33 mat, const PCVEC3 vec)
 {
 	res[0] = mat[0] * vec[0] + mat[1] * vec[1] + mat[2] * vec[2];
 	res[1] = mat[3] * vec[0] + mat[4] * vec[1] + mat[5] * vec[2];
@@ -90,7 +94,7 @@ pc_matrix_multiply_vector(PCVEC3 res, const PCMAT33 mat, const PCVEC3 vec)
 * vector in res.
 */
 void
-pc_matrix_transform_affine(PCVEC3 res, const PCMAT43 mat, const PCVEC3 vec)
+pc_matrix_43_transform_affine(PCVEC3 res, const PCMAT43 mat, const PCVEC3 vec)
 {
 	res[0] = mat[0] * vec[0] + mat[1] * vec[1]
 		+ mat[2] * vec[2] + mat[3];
