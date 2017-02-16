@@ -53,18 +53,18 @@ test_interp_simple()
 	size_t hexsize = strlen(hexbuf);
 	uint8_t *wkb = bytes_from_hexbytes(hexbuf, hexsize);
 	PCPATCH *pa = pc_patch_from_wkb(schema, wkb, hexsize/2);
-    PCPOINTLIST *li = pc_pointlist_from_patch(pa);
+	PCPOINTLIST *li = pc_pointlist_from_patch(pa);
 
-    PCPOINT *pt = pc_point_interp(pa, "X", 0.05, 0);
-    char *pstr = pc_point_to_string(pt);
-    CU_ASSERT_STRING_EQUAL(pstr, "{\"pcid\":0,\"pt\":[0.05,0.02,0.05,7]}");
+	PCPOINT *pt = pc_point_interp(pa, "X", 0.05, 0);
+	char *pstr = pc_point_to_string(pt);
+	CU_ASSERT_STRING_EQUAL(pstr, "{\"pcid\":0,\"pt\":[0.05,0.02,0.05,7]}");
 
-    // free
-    pcfree(wkb);
-    pcfree(pstr);
-    pc_patch_free(pa);
-    pc_point_free(pt);
-    pc_pointlist_free(li);
+	// free
+	pcfree(wkb);
+	pcfree(pstr);
+	pc_patch_free(pa);
+	pc_point_free(pt);
+	pc_pointlist_free(li);
 }
 
 static void
@@ -77,29 +77,29 @@ test_interp_sorted()
 	// 0000000200000001000000040008 pt1 (XYZi)
 	// 0000000800000003000000060006 pt2 (XYZi)
 
-    char *pstr;
+	char *pstr;
 	char *hexbuf = "0000000000000000000000000200000002000000010000000400080000000800000003000000060006";
 	size_t hexsize = strlen(hexbuf);
 	uint8_t *wkb = bytes_from_hexbytes(hexbuf, hexsize);
 	PCPATCH *pa = pc_patch_from_wkb(schema, wkb, hexsize/2);
-    PCPOINTLIST *li = pc_pointlist_from_patch(pa);
+	PCPOINTLIST *li = pc_pointlist_from_patch(pa);
 
-    PCPOINT *pt = pc_point_interp(pa, "X", 0.05, 0);
-    pstr = pc_point_to_string(pt);
-    CU_ASSERT_STRING_EQUAL(pstr, "{\"pcid\":0,\"pt\":[0.05,0.02,0.05,7]}");
-    pcfree(pstr);
-    pc_point_free(pt);
+	PCPOINT *pt = pc_point_interp(pa, "X", 0.05, 0);
+	pstr = pc_point_to_string(pt);
+	CU_ASSERT_STRING_EQUAL(pstr, "{\"pcid\":0,\"pt\":[0.05,0.02,0.05,7]}");
+	pcfree(pstr);
+	pc_point_free(pt);
 
-    pt = pc_point_interp(pa, "X", 0.05, 1);
-    pstr = pc_point_to_string(pt);
-    CU_ASSERT_STRING_EQUAL(pstr, "{\"pcid\":0,\"pt\":[0.05,0.02,0.05,7]}");
+	pt = pc_point_interp(pa, "X", 0.05, 1);
+	pstr = pc_point_to_string(pt);
+	CU_ASSERT_STRING_EQUAL(pstr, "{\"pcid\":0,\"pt\":[0.05,0.02,0.05,7]}");
 
-    // free
-    pcfree(wkb);
-    pcfree(pstr);
-    pc_patch_free(pa);
-    pc_point_free(pt);
-    pc_pointlist_free(li);
+	// free
+	pcfree(wkb);
+	pcfree(pstr);
+	pc_patch_free(pa);
+	pc_point_free(pt);
+	pc_pointlist_free(li);
 }
 
 static void
@@ -116,28 +116,28 @@ test_interp_limits()
 	size_t hexsize = strlen(hexbuf);
 	uint8_t *wkb = bytes_from_hexbytes(hexbuf, hexsize);
 	PCPATCH *pa = pc_patch_from_wkb(schema, wkb, hexsize/2);
-    PCPOINTLIST *li = pc_pointlist_from_patch(pa);
-    char *pstr;
-    
-    PCPOINT *pt = pc_point_interp(pa, "X", 0.08, 0);
-    CU_ASSERT_PTR_NULL_FATAL(pt);
+	PCPOINTLIST *li = pc_pointlist_from_patch(pa);
+	char *pstr;
 
-    pt = pc_point_interp(pa, "X", 0.081, 0);
-    CU_ASSERT_PTR_NULL_FATAL(pt);
+	PCPOINT *pt = pc_point_interp(pa, "X", 0.08, 0);
+	CU_ASSERT_PTR_NULL_FATAL(pt);
 
-    pt = pc_point_interp(pa, "X", 0.02, 0);
-    pstr = pc_point_to_string(pt);
-    CU_ASSERT_STRING_EQUAL(pstr, "{\"pcid\":0,\"pt\":[0.02,0.01,0.04,8]}");
-    pcfree(pstr);
-    pc_point_free(pt);
+	pt = pc_point_interp(pa, "X", 0.081, 0);
+	CU_ASSERT_PTR_NULL_FATAL(pt);
 
-    pt = pc_point_interp(pa, "X", 0.019, 0);
-    CU_ASSERT_PTR_NULL_FATAL(pt);
+	pt = pc_point_interp(pa, "X", 0.02, 0);
+	pstr = pc_point_to_string(pt);
+	CU_ASSERT_STRING_EQUAL(pstr, "{\"pcid\":0,\"pt\":[0.02,0.01,0.04,8]}");
+	pcfree(pstr);
+	pc_point_free(pt);
 
-    // free
-    pcfree(wkb);
-    pc_pointlist_free(li);
-    pc_patch_free(pa);
+	pt = pc_point_interp(pa, "X", 0.019, 0);
+	CU_ASSERT_PTR_NULL_FATAL(pt);
+
+	// free
+	pcfree(wkb);
+	pc_pointlist_free(li);
+	pc_patch_free(pa);
 }
 
 /* REGISTER ***********************************************************/
@@ -146,12 +146,12 @@ CU_TestInfo interp_tests[] = {
 	PC_TEST(test_interp_simple),
 	PC_TEST(test_interp_limits),
 	PC_TEST(test_interp_sorted),
-    CU_TEST_INFO_NULL
+	CU_TEST_INFO_NULL
 };
 
 CU_SuiteInfo interp_suite = {
-    .pName = "interp",
-    .pInitFunc = init_suite,
-    .pCleanupFunc = clean_suite,
-    .pTests = interp_tests
+	.pName = "interp",
+	.pInitFunc = init_suite,
+	.pCleanupFunc = clean_suite,
+	.pTests = interp_tests
 };
