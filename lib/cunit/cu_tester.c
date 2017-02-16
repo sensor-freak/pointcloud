@@ -23,16 +23,16 @@ extern CU_SuiteInfo sort_suite;
 extern CU_SuiteInfo interp_suite;
 
 /**
- * CUnit error handler
- * Log message in a global var instead of printing in stderr
- *
- * CAUTION: Not stop execution on pcerror case !!!
+* CUnit error handler
+* Log message in a global var instead of printing in stderr
+*
+* CAUTION: Not stop execution on pcerror case !!!
 */
 static void cu_error_reporter(const char *fmt, va_list ap)
 {
-  vsnprintf(cu_error_msg, MAX_CUNIT_MSG_LENGTH-1, fmt, ap);
-  cu_error_msg[MAX_CUNIT_MSG_LENGTH-1] = '\0';
-  va_end (ap);
+	vsnprintf(cu_error_msg, MAX_CUNIT_MSG_LENGTH-1, fmt, ap);
+	cu_error_msg[MAX_CUNIT_MSG_LENGTH-1] = '\0';
+	va_end (ap);
 }
 
 void cu_error_msg_reset() {
@@ -53,8 +53,8 @@ int main(int argc, char *argv[])
 		schema_suite,
 		patch_suite,
 		point_suite,
-		ght_suite, 
-		bytes_suite, 
+		ght_suite,
+		bytes_suite,
 		lazperf_suite,
 		sort_suite,
         interp_suite,
@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
 	/* Set up to use the system memory management / logging */
 	pc_install_default_handlers();
 
-  pc_set_handlers(0, 0, 0, cu_error_reporter, 0, 0);
+	pc_set_handlers(0, 0, 0, cu_error_reporter, 0, 0);
 
 	/* initialize the CUnit test registry */
 	if (CUE_SUCCESS != CU_initialize_registry())
@@ -149,7 +149,7 @@ int main(int argc, char *argv[])
 						num_run = CU_get_number_of_asserts();
 						num_failed = CU_get_number_of_failures();
 						printf("\n    %s - asserts - %3d passed, %3d failed, %3d total.\n\n",
-						       (0 == num_failed ? "PASSED" : "FAILED"), (num_run - num_failed), num_failed, num_run);
+							   (0 == num_failed ? "PASSED" : "FAILED"), (num_run - num_failed), num_failed, num_run);
 					}
 				}
 				else
@@ -169,11 +169,11 @@ int main(int argc, char *argv[])
 						num_run = CU_get_number_of_tests_run();
 						num_failed = CU_get_number_of_tests_failed();
 						printf("\n    %s -   tests - %3d passed, %3d failed, %3d total.\n",
-						       (0 == num_failed ? "PASSED" : "FAILED"), (num_run - num_failed), num_failed, num_run);
+							   (0 == num_failed ? "PASSED" : "FAILED"), (num_run - num_failed), num_failed, num_run);
 						num_run = CU_get_number_of_asserts();
 						num_failed = CU_get_number_of_failures();
 						printf("           - asserts - %3d passed, %3d failed, %3d total.\n\n",
-						       (num_run - num_failed), num_failed, num_run);
+							   (num_run - num_failed), num_failed, num_run);
 					}
 				}
 			}
@@ -204,7 +204,7 @@ file_to_str(const char *fname)
 	snprintf(fullpath, 512, "%s/lib/cunit/%s", PROJECT_SOURCE_DIR, fname);
 	fr = fopen (fullpath, "rt");
 
-	while (fr && fgets(buf, MAXLINELEN, fr) != NULL) 
+	while (fr && fgets(buf, MAXLINELEN, fr) != NULL)
 	{
 		if (buf[0] == '\0')
 			continue;
@@ -219,8 +219,8 @@ file_to_str(const char *fname)
 		memcpy(ptr, buf, lnsz);
 		ptr += lnsz;
 	}
-	
-    *ptr = '\0';
+
+	*ptr = '\0';
 	fclose(fr);
 
 	return str;
