@@ -34,6 +34,7 @@ clean_suite(void)
 	return 0;
 }
 
+#ifdef HAVE_LAZPERF
 static void
 test_schema_compression_lazperf(void)
 {
@@ -50,7 +51,6 @@ test_schema_compression_lazperf(void)
 	pcfree(xmlstr);
 }
 
-#ifdef HAVE_LAZPERF
 static void
 test_patch_lazperf()
 {
@@ -262,8 +262,8 @@ CU_TestInfo lazperf_tests[] = {
 };
 
 CU_SuiteInfo lazperf_suite = {
-    .pName = "lazperf",
-    .pInitFunc = init_suite,
-    .pCleanupFunc = clean_suite,
-    .pTests = lazperf_tests
+	.pName = "lazperf",
+	.pInitFunc = init_suite,
+	.pCleanupFunc = clean_suite,
+	.pTests = lazperf_tests
 };
