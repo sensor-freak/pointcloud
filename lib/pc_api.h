@@ -38,10 +38,10 @@
 */
 enum COMPRESSIONS
 {
-    PC_NONE = 0,
-    PC_GHT = 1,
-    PC_DIMENSIONAL = 2,
-    PC_LAZPERF = 3
+	PC_NONE = 0,
+	PC_GHT = 1,
+	PC_DIMENSIONAL = 2,
+	PC_LAZPERF = 3
 };
 
 /**
@@ -50,16 +50,16 @@ enum COMPRESSIONS
 */
 enum ENDIANS
 {
-    PC_XDR = 0,   /* Big */
-    PC_NDR = 1    /* Little */
+	PC_XDR = 0,   /* Big */
+	PC_NDR = 1	  /* Little */
 };
 
 typedef enum
 {
-    PC_GT,
-    PC_LT,
-    PC_EQUAL,
-    PC_BETWEEN
+	PC_GT,
+	PC_LT,
+	PC_EQUAL,
+	PC_BETWEEN
 } PC_FILTERTYPE;
 
 
@@ -83,11 +83,11 @@ typedef struct
 
 typedef struct
 {
-	uint32_t pcid;        /* Unique ID for schema */
-	uint32_t ndims;       /* How many dimensions does this schema have? */
-	size_t size;          /* How wide (bytes) is a point with this schema? */
+	uint32_t pcid;		  /* Unique ID for schema */
+	uint32_t ndims;		  /* How many dimensions does this schema have? */
+	size_t size;		  /* How wide (bytes) is a point with this schema? */
 	PCDIMENSION **dims;   /* Array of dimension pointers */
-	uint32_t srid;        /* Foreign key reference to SPATIAL_REF_SYS */
+	uint32_t srid;		  /* Foreign key reference to SPATIAL_REF_SYS */
 	int32_t x_position;  /* What entry is the x coordinate at? */
 	int32_t y_position;  /* What entry is the y coordinate at? */
 	uint32_t compression; /* Compression type applied to the data */
@@ -168,12 +168,12 @@ PCSTATS;
 */
 
 #define PCPATCH_COMMON \
-    int type; \
-    int8_t readonly; \
-    const PCSCHEMA *schema; \
-    uint32_t npoints;  \
-    PCBOUNDS bounds; \
-    PCSTATS *stats;
+	int type; \
+	int8_t readonly; \
+	const PCSCHEMA *schema; \
+	uint32_t npoints;  \
+	PCBOUNDS bounds; \
+	PCSTATS *stats;
 
 typedef struct
 {
@@ -214,7 +214,7 @@ typedef void* (*pc_allocator)(size_t size);
 typedef void* (*pc_reallocator)(void *mem, size_t size);
 typedef void  (*pc_deallocator)(void *mem);
 typedef void  (*pc_message_handler)(const char *string, va_list ap)
-    __attribute__ (( format (printf, 1, 0) ));
+	__attribute__ (( format (printf, 1, 0) ));
 
 
 
@@ -236,9 +236,11 @@ void  pcinfo(const char *fmt, ...);
 void  pcwarn(const char *fmt, ...);
 
 /** Set custom memory allocators and messaging (used by PgSQL module) */
-void pc_set_handlers(pc_allocator allocator, pc_reallocator reallocator,
-                     pc_deallocator deallocator, pc_message_handler error_handler,
-                     pc_message_handler info_handler, pc_message_handler warning_handler);
+void pc_set_handlers(
+	pc_allocator allocator, pc_reallocator reallocator,
+	pc_deallocator deallocator, pc_message_handler error_handler,
+	pc_message_handler info_handler, pc_message_handler warning_handler
+);
 
 /** Set program to use system memory allocators and messaging */
 void pc_install_default_handlers(void);
@@ -318,10 +320,10 @@ PCPOINT* pc_point_from_data(const PCSCHEMA *s, const uint8_t *data);
 PCPOINT* pc_point_from_double_array(const PCSCHEMA *s, double *array, uint32_t nelems);
 
 /**
- * Return an allocated double array of doubles representing point values
- *
- * The number of elements in the array is equal to pt->schema->n_dims
- */
+* Return an allocated double array of doubles representing point values
+*
+* The number of elements in the array is equal to pt->schema->n_dims
+*/
 double* pc_point_to_double_array(const PCPOINT *pt);
 
 /** Frees the PTPOINT and data (if not readonly). Does not free referenced schema */
@@ -447,9 +449,9 @@ PCPOINT *pc_point_interp(const PCPATCH *pa, const char *name, double value, char
 
 /** optimized PC_Patch(PC_Interpolate(p1,attr1,PC_Get(pt2,attr2), sorted1)) from PC_explode(p2) as pt2 */
 PCPATCH *pc_patch_interp(
-    const PCPATCH *p1, const PCPATCH *p2,
-    const char *name1, const char *name2,
-    char sorted1, char sorted2);
+	const PCPATCH *p1, const PCPATCH *p2,
+	const char *name1, const char *name2,
+	char sorted1, char sorted2);
 
 /** Subset batch based on index */
 PCPATCH* pc_patch_range(const PCPATCH *pa, int first, int cound);

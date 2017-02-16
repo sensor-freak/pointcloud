@@ -234,7 +234,7 @@ PCPOINT *
 pc_point_from_wkb(const PCSCHEMA *schema, uint8_t *wkb, size_t wkblen)
 {
 	/*
-	byte:     endianness (1 = NDR, 0 = XDR)
+	byte:	  endianness (1 = NDR, 0 = XDR)
 	uint32:   pcid (key to POINTCLOUD_SCHEMAS)
 	uchar[]:  data (interpret relative to pcid)
 	*/
@@ -275,7 +275,7 @@ uint8_t *
 pc_point_to_wkb(const PCPOINT *pt, size_t *wkbsize)
 {
 	/*
-	byte:     endianness (1 = NDR, 0 = XDR)
+	byte:	  endianness (1 = NDR, 0 = XDR)
 	uint32:   pcid (key to POINTCLOUD_SCHEMAS)
 	uchar[]:  data (interpret relative to pcid)
 	*/
@@ -354,15 +354,15 @@ pc_point_to_geometry_wkb(const PCPOINT *pt, size_t *wkbsize)
 
 
 /**
- * @brief this function convert a PCPOINT to an array of double containing
- *        all the dimension values of this point
- *
- * @param a pointer to the point to convert to double
- *
- * @return a pointer to an array of double containing all the dimensions
- *         of the point expressed as double precision
- *
- */
+* @brief this function convert a PCPOINT to an array of double containing
+*		 all the dimension values of this point
+*
+* @param a pointer to the point to convert to double
+*
+* @return a pointer to an array of double containing all the dimensions
+*		  of the point expressed as double precision
+*
+*/
 double * pc_point_to_double_array(const PCPOINT *p)
 {
 	int i;
@@ -381,32 +381,32 @@ double * pc_point_to_double_array(const PCPOINT *p)
 */
 void
 pc_point_rotate_quaternion(
-    PCPOINT *point,
-    double qw, double qx, double qy, double qz,
-    const char *xdimname, const char *ydimname, const char *zdimname)
+	PCPOINT *point,
+	double qw, double qx, double qy, double qz,
+	const char *xdimname, const char *ydimname, const char *zdimname)
 {
-    const PCSCHEMA *schema;
-    const PCDIMENSION *xdim, *ydim, *zdim;
-    PCMAT33 qmat;
-    PCVEC3 vec, rvec;
+	const PCSCHEMA *schema;
+	const PCDIMENSION *xdim, *ydim, *zdim;
+	PCMAT33 qmat;
+	PCVEC3 vec, rvec;
 
-    pc_matrix_set_from_quaternion(qmat, qw, qx, qy, qz);
+	pc_matrix_set_from_quaternion(qmat, qw, qx, qy, qz);
 
-    schema = point->schema;
- 
-    xdim = pc_schema_get_dimension_by_name(schema, xdimname);
-    ydim = pc_schema_get_dimension_by_name(schema, ydimname);
-    zdim = pc_schema_get_dimension_by_name(schema, zdimname);
+	schema = point->schema;
 
-    pc_point_get_double(point, xdim, &vec[0]);
-    pc_point_get_double(point, ydim, &vec[1]);
-    pc_point_get_double(point, zdim, &vec[2]);
+	xdim = pc_schema_get_dimension_by_name(schema, xdimname);
+	ydim = pc_schema_get_dimension_by_name(schema, ydimname);
+	zdim = pc_schema_get_dimension_by_name(schema, zdimname);
 
-    pc_matrix_multiply_vector(rvec, qmat, vec);
+	pc_point_get_double(point, xdim, &vec[0]);
+	pc_point_get_double(point, ydim, &vec[1]);
+	pc_point_get_double(point, zdim, &vec[2]);
 
-    pc_point_set_double(point, xdim, rvec[0]);
-    pc_point_set_double(point, ydim, rvec[1]);
-    pc_point_set_double(point, zdim, rvec[2]);
+	pc_matrix_multiply_vector(rvec, qmat, vec);
+
+	pc_point_set_double(point, xdim, rvec[0]);
+	pc_point_set_double(point, ydim, rvec[1]);
+	pc_point_set_double(point, zdim, rvec[2]);
 
 }
 
@@ -415,27 +415,27 @@ pc_point_rotate_quaternion(
 */
 void
 pc_point_translate(
-    PCPOINT *point,
-    double tx, double ty, double tz,
-    const char *xdimname, const char *ydimname, const char *zdimname)
+	PCPOINT *point,
+	double tx, double ty, double tz,
+	const char *xdimname, const char *ydimname, const char *zdimname)
 {
-    const PCSCHEMA *schema;
-    const PCDIMENSION *xdim, *ydim, *zdim;
-    double x, y, z;
+	const PCSCHEMA *schema;
+	const PCDIMENSION *xdim, *ydim, *zdim;
+	double x, y, z;
 
-    schema = point->schema;
+	schema = point->schema;
 
-    xdim = pc_schema_get_dimension_by_name(schema, xdimname);
-    ydim = pc_schema_get_dimension_by_name(schema, ydimname);
-    zdim = pc_schema_get_dimension_by_name(schema, zdimname);
+	xdim = pc_schema_get_dimension_by_name(schema, xdimname);
+	ydim = pc_schema_get_dimension_by_name(schema, ydimname);
+	zdim = pc_schema_get_dimension_by_name(schema, zdimname);
 
-    pc_point_get_double(point, xdim, &x);
-    pc_point_get_double(point, ydim, &y);
-    pc_point_get_double(point, zdim, &z);
+	pc_point_get_double(point, xdim, &x);
+	pc_point_get_double(point, ydim, &y);
+	pc_point_get_double(point, zdim, &z);
 
-    pc_point_set_double(point, xdim, x + tx);
-    pc_point_set_double(point, ydim, y + ty);
-    pc_point_set_double(point, zdim, z + tz);
+	pc_point_set_double(point, xdim, x + tx);
+	pc_point_set_double(point, ydim, y + ty);
+	pc_point_set_double(point, zdim, z + tz);
 }
 
 /**
@@ -443,33 +443,33 @@ pc_point_translate(
 */
 void
 pc_point_affine(
-    PCPOINT *point,
-    double a, double b, double c,
-    double d, double e, double f,
-    double g, double h, double i,
-    double xoff, double yoff, double zoff,
-    const char *xdimname, const char *ydimname, const char *zdimname)
+	PCPOINT *point,
+	double a, double b, double c,
+	double d, double e, double f,
+	double g, double h, double i,
+	double xoff, double yoff, double zoff,
+	const char *xdimname, const char *ydimname, const char *zdimname)
 {
-    const PCSCHEMA *schema;
-    const PCDIMENSION *xdim, *ydim, *zdim;
-    PCMAT43 amat;
-    PCVEC3 vec, rvec;
+	const PCSCHEMA *schema;
+	const PCDIMENSION *xdim, *ydim, *zdim;
+	PCMAT43 amat;
+	PCVEC3 vec, rvec;
 
-    pc_matrix_set_affine(amat, a, b, c, d, e, f, g, h, i, xoff, yoff, zoff);
+	pc_matrix_set_affine(amat, a, b, c, d, e, f, g, h, i, xoff, yoff, zoff);
 
-    schema = point->schema;
+	schema = point->schema;
 
-    xdim = pc_schema_get_dimension_by_name(schema, xdimname);
-    ydim = pc_schema_get_dimension_by_name(schema, ydimname);
-    zdim = pc_schema_get_dimension_by_name(schema, zdimname);
+	xdim = pc_schema_get_dimension_by_name(schema, xdimname);
+	ydim = pc_schema_get_dimension_by_name(schema, ydimname);
+	zdim = pc_schema_get_dimension_by_name(schema, zdimname);
 
-    pc_point_get_double(point, xdim, &vec[0]);
-    pc_point_get_double(point, ydim, &vec[1]);
-    pc_point_get_double(point, zdim, &vec[2]);
+	pc_point_get_double(point, xdim, &vec[0]);
+	pc_point_get_double(point, ydim, &vec[1]);
+	pc_point_get_double(point, zdim, &vec[2]);
 
-    pc_matrix_transform_affine(rvec, amat, vec);
+	pc_matrix_transform_affine(rvec, amat, vec);
 
-    pc_point_set_double(point, xdim, rvec[0]);
-    pc_point_set_double(point, ydim, rvec[1]);
-    pc_point_set_double(point, zdim, rvec[2]);
+	pc_point_set_double(point, xdim, rvec[0]);
+	pc_point_set_double(point, ydim, rvec[1]);
+	pc_point_set_double(point, zdim, rvec[2]);
 }
