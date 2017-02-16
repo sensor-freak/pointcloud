@@ -299,10 +299,10 @@ void pc_bitmap_filter(PCBITMAP *map, PC_FILTERTYPE filter, int i, double d, doub
 * MATRIX
 */
 
-void pc_matrix_set_from_quaternion(PCMAT33 mat, double qw, double qx, double qy, double qz);
-void pc_matrix_set_affine(PCMAT43 mat, double a, double b, double c, double d, double e, double f, double g, double h, double i, double xoff, double yoff, double zoff);
-void pc_matrix_multiply_vector(PCVEC3 rotatedvec, const PCMAT33 mat, const PCVEC3 vec);
-void pc_matrix_transform_affine(PCVEC3 res, const PCMAT43 mat, const PCVEC3 vec);
+void pc_matrix_43_set(PCMAT43 mat, double a, double b, double c, double d, double e, double f, double g, double h, double i, double xoff, double yoff, double zoff);
+void pc_matrix_33_set_from_quaternion(PCMAT33 mat, double qw, double qx, double qy, double qz);
+void pc_matrix_33_multiply_vector(PCVEC3 rotatedvec, const PCMAT33 mat, const PCVEC3 vec);
+void pc_matrix_43_transform_affine(PCVEC3 res, const PCMAT43 mat, const PCVEC3 vec);
 
 #endif /* _PC_API_INTERNAL_H */
 
