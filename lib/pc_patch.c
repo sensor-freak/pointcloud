@@ -721,6 +721,18 @@ pc_patch_rotate_quaternion(
 
 	pc_pointlist_free(pointlist);
 
+	if ( PC_FAILURE == pc_patch_uncompressed_compute_extent(uncompressed_patch) )
+	{
+		pcerror("%s: extent computation failed", __func__);
+		return NULL;
+	}
+	if ( PC_FAILURE == pc_patch_uncompressed_compute_stats(uncompressed_patch) )
+	{
+		pcerror("%s: stats computation failed", __func__);
+		return NULL;
+	}
+
+
 	return ((PCPATCH *)uncompressed_patch);
 }
 
@@ -778,6 +790,17 @@ pc_patch_translate(
 	}
 
 	pc_pointlist_free(pointlist);
+
+	if ( PC_FAILURE == pc_patch_uncompressed_compute_extent(uncompressed_patch) )
+	{
+		pcerror("%s: extent computation failed", __func__);
+		return NULL;
+	}
+	if ( PC_FAILURE == pc_patch_uncompressed_compute_stats(uncompressed_patch) )
+	{
+		pcerror("%s: stats computation failed", __func__);
+		return NULL;
+	}
 
 	return ((PCPATCH *)uncompressed_patch);
 }
@@ -844,6 +867,17 @@ pc_patch_affine(
 	}
 
 	pc_pointlist_free(pointlist);
+
+	if ( PC_FAILURE == pc_patch_uncompressed_compute_extent(uncompressed_patch) )
+	{
+		pcerror("%s: extent computation failed", __func__);
+		return NULL;
+	}
+	if ( PC_FAILURE == pc_patch_uncompressed_compute_stats(uncompressed_patch) )
+	{
+		pcerror("%s: stats computation failed", __func__);
+		return NULL;
+	}
 
 	return ((PCPATCH *)uncompressed_patch);
 }
