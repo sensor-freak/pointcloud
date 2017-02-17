@@ -187,6 +187,7 @@ PCPATCH_UNCOMPRESSED* pc_patch_uncompressed_make(const PCSCHEMA *s, uint32_t max
 int pc_patch_uncompressed_compute_extent(PCPATCH_UNCOMPRESSED *patch);
 int pc_patch_uncompressed_compute_stats(PCPATCH_UNCOMPRESSED *patch);
 void pc_patch_uncompressed_free(PCPATCH_UNCOMPRESSED *patch);
+uint8_t *pc_patch_uncompressed_readonly(PCPATCH_UNCOMPRESSED *patch);
 PCPOINTLIST* pc_pointlist_from_uncompressed(const PCPATCH_UNCOMPRESSED *patch);
 PCPATCH_UNCOMPRESSED* pc_patch_uncompressed_from_pointlist(const PCPOINTLIST *pl);
 PCPATCH_UNCOMPRESSED* pc_patch_uncompressed_from_dimensional(const PCPATCH_DIMENSIONAL *pdl);
@@ -305,4 +306,3 @@ void pc_matrix_33_multiply_vector(PCVEC3 rotatedvec, const PCMAT33 mat, const PC
 void pc_matrix_43_transform_affine(PCVEC3 res, const PCMAT43 mat, const PCVEC3 vec);
 
 #endif /* _PC_API_INTERNAL_H */
-
