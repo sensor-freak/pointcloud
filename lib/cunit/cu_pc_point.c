@@ -162,60 +162,60 @@ test_point_rotate_quaternion()
 	// π/2 rotation of point (1, 1, 1) around x axis
 	// expected result: (1, -1, 1)
 	pt = pc_point_make(schema);
-	pc_point_set_double_by_name(pt, "x", 1.0);
-	pc_point_set_double_by_name(pt, "y", 1.0);
-	pc_point_set_double_by_name(pt, "z", 1.0);
+	pc_point_set_x(pt, 1.0);
+	pc_point_set_y(pt, 1.0);
+	pc_point_set_z(pt, 1.0);
 	angle = M_PI_2;
 	qw = cos(angle / 2.);
 	qx = sin(angle / 2.);
 	qy = 0;
 	qz = 0;
-	pc_point_rotate_quaternion(pt, qw, qx, qy, qz, "x", "y", "z");
-	pc_point_get_double_by_name(pt, "x", &v);
+	pc_point_rotate_quaternion(pt, qw, qx, qy, qz, NULL, NULL, NULL);
+	v = pc_point_get_x(pt);
 	CU_ASSERT(v == 1);
-	pc_point_get_double_by_name(pt, "y", &v);
+	v = pc_point_get_y(pt);
 	CU_ASSERT(v == -1);
-	pc_point_get_double_by_name(pt, "z", &v);
+	v = pc_point_get_z(pt);
 	CU_ASSERT(v == 1);
 	pc_point_free(pt);
 
 	// π/2 rotation of point (1, 1, 1) around y axis
 	// expected result: (1, 1, -1)
 	pt = pc_point_make(schema);
-	pc_point_set_double_by_name(pt, "x", 1.0);
-	pc_point_set_double_by_name(pt, "y", 1.0);
-	pc_point_set_double_by_name(pt, "z", 1.0);
+	pc_point_set_x(pt, 1.0);
+	pc_point_set_y(pt, 1.0);
+	pc_point_set_z(pt, 1.0);
 	angle = M_PI_2;
 	qw = cos(angle / 2.);
 	qx = 0;
 	qy = sin(angle / 2.);
 	qz = 0;
-	pc_point_rotate_quaternion(pt, qw, qx, qy, qz, "x", "y", "z");
-	pc_point_get_double_by_name(pt, "x", &v);
+	pc_point_rotate_quaternion(pt, qw, qx, qy, qz, NULL, NULL, NULL);
+	v = pc_point_get_x(pt);
 	CU_ASSERT(v == 1);
-	pc_point_get_double_by_name(pt, "y", &v);
+	v = pc_point_get_y(pt);
 	CU_ASSERT(v == 1);
-	pc_point_get_double_by_name(pt, "z", &v);
+	v = pc_point_get_z(pt);
 	CU_ASSERT(v == -1);
 	pc_point_free(pt);
 
 	// π/2 rotation of point (1, 1, 1) around z axis
 	// expected result: (-1, 1, 1)
 	pt = pc_point_make(schema);
-	pc_point_set_double_by_name(pt, "x", 1.0);
-	pc_point_set_double_by_name(pt, "y", 1.0);
-	pc_point_set_double_by_name(pt, "z", 1.0);
+	pc_point_set_x(pt, 1.0);
+	pc_point_set_y(pt, 1.0);
+	pc_point_set_z(pt, 1.0);
 	angle = M_PI_2;
 	qw = cos(angle / 2.);
 	qx = 0;
 	qy = 0;
 	qz = sin(angle / 2.);
-	pc_point_rotate_quaternion(pt, qw, qx, qy, qz, "x", "y", "z");
-	pc_point_get_double_by_name(pt, "x", &v);
+	pc_point_rotate_quaternion(pt, qw, qx, qy, qz, NULL, NULL, NULL);
+	v = pc_point_get_x(pt);
 	CU_ASSERT(v == -1);
-	pc_point_get_double_by_name(pt, "y", &v);
+	v = pc_point_get_y(pt);
 	CU_ASSERT(v == 1);
-	pc_point_get_double_by_name(pt, "z", &v);
+	v = pc_point_get_z(pt);
 	CU_ASSERT(v == 1);
 	pc_point_free(pt);
 }
@@ -230,18 +230,18 @@ test_point_translate()
 	// translation of point (1, 1, 1) by (-1, 1, 2)
 	// expected result: (0, 2, 3)
 	pt = pc_point_make(schema);
-	pc_point_set_double_by_name(pt, "x", 1.0);
-	pc_point_set_double_by_name(pt, "y", 1.0);
-	pc_point_set_double_by_name(pt, "z", 1.0);
+	pc_point_set_x(pt, 1.0);
+	pc_point_set_y(pt, 1.0);
+	pc_point_set_z(pt, 1.0);
 	tx = -1.0;
 	ty = 1.0;
 	tz = 2.0;
-	pc_point_translate(pt, tx, ty, tz, "x", "y", "z");
-	pc_point_get_double_by_name(pt, "x", &v);
+	pc_point_translate(pt, tx, ty, tz, NULL, NULL, NULL);
+	v = pc_point_get_x(pt);
 	CU_ASSERT(v == 0);
-	pc_point_get_double_by_name(pt, "y", &v);
+	v = pc_point_get_y(pt);
 	CU_ASSERT(v == 2);
-	pc_point_get_double_by_name(pt, "z", &v);
+	v = pc_point_get_z(pt);
 	CU_ASSERT(v == 3);
 	pc_point_free(pt);
 }
@@ -256,9 +256,9 @@ test_point_affine()
 
 	// scale + translate
 	pt = pc_point_make(schema);
-	pc_point_set_double_by_name(pt, "x", 1.0);
-	pc_point_set_double_by_name(pt, "y", 1.0);
-	pc_point_set_double_by_name(pt, "z", 1.0);
+	pc_point_set_x(pt, 1.0);
+	pc_point_set_y(pt, 1.0);
+	pc_point_set_z(pt, 1.0);
 	a = 2;
 	b = 0;
 	c = 0;
@@ -274,12 +274,12 @@ test_point_affine()
 	pc_point_affine(
 			pt,
 			a, b, c, d, e, f, g, h, i, xoff, yoff, zoff,
-			"x", "y", "z");
-	pc_point_get_double_by_name(pt, "x", &v);
+			NULL, NULL, NULL);
+	v = pc_point_get_x(pt);
 	CU_ASSERT(v == 3);
-	pc_point_get_double_by_name(pt, "y", &v);
+	v = pc_point_get_y(pt);
 	CU_ASSERT(v == 3);
-	pc_point_get_double_by_name(pt, "z", &v);
+	v = pc_point_get_z(pt);
 	CU_ASSERT(v == 3);
 	pc_point_free(pt);
 }

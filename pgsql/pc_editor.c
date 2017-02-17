@@ -36,9 +36,9 @@ Datum pcpatch_rotate_quaternion(PG_FUNCTION_ARGS)
 	qx = PG_GETARG_FLOAT8(2);
 	qy = PG_GETARG_FLOAT8(3);
 	qz = PG_GETARG_FLOAT8(4);
-	xdimname = text_to_cstring(PG_GETARG_TEXT_P(5));
-	ydimname = text_to_cstring(PG_GETARG_TEXT_P(6));
-	zdimname = text_to_cstring(PG_GETARG_TEXT_P(7));
+	xdimname = PG_ARGISNULL(5) ? NULL : text_to_cstring(PG_GETARG_TEXT_P(5));
+	ydimname = PG_ARGISNULL(6) ? NULL : text_to_cstring(PG_GETARG_TEXT_P(6));
+	zdimname = PG_ARGISNULL(7) ? NULL : text_to_cstring(PG_GETARG_TEXT_P(7));
 
 	schema = pc_schema_from_pcid(serpatch->pcid, fcinfo);
 
@@ -86,9 +86,9 @@ Datum pcpatch_translate(PG_FUNCTION_ARGS)
 	tx = PG_GETARG_FLOAT8(1);
 	ty = PG_GETARG_FLOAT8(2);
 	tz = PG_GETARG_FLOAT8(3);
-	xdimname = text_to_cstring(PG_GETARG_TEXT_P(4));
-	ydimname = text_to_cstring(PG_GETARG_TEXT_P(5));
-	zdimname = text_to_cstring(PG_GETARG_TEXT_P(6));
+	xdimname = PG_ARGISNULL(4) ? NULL : text_to_cstring(PG_GETARG_TEXT_P(4));
+	ydimname = PG_ARGISNULL(5) ? NULL : text_to_cstring(PG_GETARG_TEXT_P(5));
+	zdimname = PG_ARGISNULL(6) ? NULL : text_to_cstring(PG_GETARG_TEXT_P(6));
 
 	schema = pc_schema_from_pcid(serpatch->pcid, fcinfo);
 
@@ -150,9 +150,9 @@ Datum pcpatch_affine(PG_FUNCTION_ARGS)
 	xoff = PG_GETARG_FLOAT8(10);
 	yoff = PG_GETARG_FLOAT8(11);
 	zoff = PG_GETARG_FLOAT8(12);
-	xdimname = text_to_cstring(PG_GETARG_TEXT_P(13));
-	ydimname = text_to_cstring(PG_GETARG_TEXT_P(14));
-	zdimname = text_to_cstring(PG_GETARG_TEXT_P(15));
+	xdimname = PG_ARGISNULL(13) ? NULL : text_to_cstring(PG_GETARG_TEXT_P(13));
+	ydimname = PG_ARGISNULL(14) ? NULL : text_to_cstring(PG_GETARG_TEXT_P(14));
+	zdimname = PG_ARGISNULL(15) ? NULL : text_to_cstring(PG_GETARG_TEXT_P(15));
 
 	schema = pc_schema_from_pcid(serpatch->pcid, fcinfo);
 
@@ -202,9 +202,9 @@ Datum pcpoint_rotate_quaternion(PG_FUNCTION_ARGS)
 	qx = PG_GETARG_FLOAT8(2);
 	qy = PG_GETARG_FLOAT8(3);
 	qz = PG_GETARG_FLOAT8(4);
-	xdimname = text_to_cstring(PG_GETARG_TEXT_P(5));
-	ydimname = text_to_cstring(PG_GETARG_TEXT_P(6));
-	zdimname = text_to_cstring(PG_GETARG_TEXT_P(7));
+	xdimname = PG_ARGISNULL(5) ? NULL : text_to_cstring(PG_GETARG_TEXT_P(5));
+	ydimname = PG_ARGISNULL(6) ? NULL : text_to_cstring(PG_GETARG_TEXT_P(6));
+	zdimname = PG_ARGISNULL(7) ? NULL : text_to_cstring(PG_GETARG_TEXT_P(7));
 
 	schema = pc_schema_from_pcid(serpoint->pcid, fcinfo);
 
@@ -246,9 +246,9 @@ Datum pcpoint_translate(PG_FUNCTION_ARGS)
 	tx = PG_GETARG_FLOAT8(1);
 	ty = PG_GETARG_FLOAT8(2);
 	tz = PG_GETARG_FLOAT8(3);
-	xdimname = text_to_cstring(PG_GETARG_TEXT_P(4));
-	ydimname = text_to_cstring(PG_GETARG_TEXT_P(5));
-	zdimname = text_to_cstring(PG_GETARG_TEXT_P(6));
+	xdimname = PG_ARGISNULL(4) ? NULL : text_to_cstring(PG_GETARG_TEXT_P(4));
+	ydimname = PG_ARGISNULL(5) ? NULL : text_to_cstring(PG_GETARG_TEXT_P(5));
+	zdimname = PG_ARGISNULL(6) ? NULL : text_to_cstring(PG_GETARG_TEXT_P(6));
 
 	schema = pc_schema_from_pcid(serpoint->pcid, fcinfo);
 
@@ -304,9 +304,9 @@ Datum pcpoint_affine(PG_FUNCTION_ARGS)
 	xoff = PG_GETARG_FLOAT8(10);
 	yoff = PG_GETARG_FLOAT8(11);
 	zoff = PG_GETARG_FLOAT8(12);
-	xdimname = text_to_cstring(PG_GETARG_TEXT_P(13));
-	ydimname = text_to_cstring(PG_GETARG_TEXT_P(14));
-	zdimname = text_to_cstring(PG_GETARG_TEXT_P(15));
+	xdimname = PG_ARGISNULL(13) ? NULL : text_to_cstring(PG_GETARG_TEXT_P(13));
+	ydimname = PG_ARGISNULL(14) ? NULL : text_to_cstring(PG_GETARG_TEXT_P(14));
+	zdimname = PG_ARGISNULL(15) ? NULL : text_to_cstring(PG_GETARG_TEXT_P(15));
 
 	schema = pc_schema_from_pcid(serpoint->pcid, fcinfo);
 
