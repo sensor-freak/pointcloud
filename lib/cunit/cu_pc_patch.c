@@ -1147,9 +1147,9 @@ test_patch_rotate_quaternion_compression_none()
 	// (1, 1, 1) is the point we're going to rotate
 	pl = pc_pointlist_make(1);
 	pt = pc_point_make(simplexyzschema);
-	pc_point_set_double_by_name(pt, "x", 1.0);
-	pc_point_set_double_by_name(pt, "y", 1.0);
-	pc_point_set_double_by_name(pt, "z", 1.0);
+	pc_point_set_x(pt, 1.0);
+	pc_point_set_y(pt, 1.0);
+	pc_point_set_z(pt, 1.0);
 	pc_pointlist_add_point(pl, pt);
 
 	// π/2 rotation around x axis
@@ -1161,15 +1161,15 @@ test_patch_rotate_quaternion_compression_none()
 	qy = 0;
 	qz = 0;
 	patch = pc_patch_rotate_quaternion(
-			(PCPATCH *)patch_uncompressed, qw, qx, qy, qz, "x", "y", "z");
+			(PCPATCH *)patch_uncompressed, qw, qx, qy, qz, NULL, NULL, NULL);
 	CU_ASSERT(patch != NULL);
 	pt = pc_patch_pointn(patch, 1);
 	CU_ASSERT(pt != NULL);
-	pc_point_get_double_by_name(pt, "x", &v);
+	v = pc_point_get_x(pt);
 	CU_ASSERT(v == 1);
-	pc_point_get_double_by_name(pt, "y", &v);
+	v = pc_point_get_y(pt);
 	CU_ASSERT(v == -1);
-	pc_point_get_double_by_name(pt, "z", &v);
+	v = pc_point_get_z(pt);
 	CU_ASSERT(v == 1);
 	CU_ASSERT(patch->bounds.xmin == 1);
 	CU_ASSERT(patch->bounds.xmax == 1);
@@ -1188,15 +1188,15 @@ test_patch_rotate_quaternion_compression_none()
 	qy = sin(angle / 2.);
 	qz = 0;
 	patch = pc_patch_rotate_quaternion(
-			(PCPATCH *)patch_uncompressed, qw, qx, qy, qz, "x", "y", "z");
+			(PCPATCH *)patch_uncompressed, qw, qx, qy, qz, NULL, NULL, NULL);
 	CU_ASSERT(patch != NULL);
 	pt = pc_patch_pointn(patch, 1);
 	CU_ASSERT(pt != NULL);
-	pc_point_get_double_by_name(pt, "x", &v);
+	v = pc_point_get_x(pt);
 	CU_ASSERT(v == 1);
-	pc_point_get_double_by_name(pt, "y", &v);
+	v = pc_point_get_y(pt);
 	CU_ASSERT(v == 1);
-	pc_point_get_double_by_name(pt, "z", &v);
+	v = pc_point_get_z(pt);
 	CU_ASSERT(v == -1);
 	CU_ASSERT(patch->bounds.xmin == 1);
 	CU_ASSERT(patch->bounds.xmax == 1);
@@ -1205,6 +1205,58 @@ test_patch_rotate_quaternion_compression_none()
 	pc_point_free(pt);
 	pc_patch_free(patch);
 	pc_patch_free((PCPATCH*)patch_uncompressed);
+
+	// π/2 rotation around z axis
+	// expected result: (-1, 1, 1)
+	patch_uncompressed = pc_patch_uncompressed_from_pointlist(pl);
+	angle = M_PI_2;
+	qw = cos(angle / 2.);
+	qx = 0;
+	qy = 0;
+	qz = sin(angle / 2.);
+	patch = pc_patch_rotate_quaternion(
+			(PCPATCH *)patch_uncompressed, qw, qx, qy, qz, NULL, NULL, NULL);
+	CU_ASSERT(patch != NULL);
+	pt = pc_patch_pointn(patch, 1);
+	CU_ASSERT(pt != NULL);
+	v = pc_point_get_x(pt);
+	CU_ASSERT(v == -1);
+	v = pc_point_get_y(pt);
+	CU_ASSERT(v == 1);
+	v = pc_point_get_z(pt);
+	CU_ASSERT(v == 1);
+	CU_ASSERT(patch->bounds.xmin == -1);
+	CU_ASSERT(patch->bounds.xmax == -1);
+	CU_ASSERT(patch->bounds.ymin == 1);
+	CU_ASSERT(patch->bounds.ymax == 1);
+	pc_point_free(pt);
+	pc_patch_free(patch);
+	pc_patch_free((PCPATCH*)patch_uncompressed);
+
+	pc_pointlist_free(pl);
+}
+
+static void
+test_patch_rotate_quaternion_compression_none_with_dimension_names()
+{
+	PCPATCH *patch;
+	PCPATCH_UNCOMPRESSED *patch_uncompressed;
+	PCPOINTLIST *pl;
+	PCPOINT *pt;
+	double angle;
+	double qw, qx, qy, qz;
+	double v;
+
+	// this is the same test as test_patch_rotate_quaternion, but explict
+	// dimension names are passed to pc_patch_rotate_quaternion
+
+	// (1, 1, 1) is the point we're going to rotate
+	pl = pc_pointlist_make(1);
+	pt = pc_point_make(simplexyzschema);
+	pc_point_set_double_by_name(pt, "x", 1.0);
+	pc_point_set_double_by_name(pt, "y", 1.0);
+	pc_point_set_double_by_name(pt, "z", 1.0);
+	pc_pointlist_add_point(pl, pt);
 
 	// π/2 rotation around z axis
 	// expected result: (-1, 1, 1)
@@ -1236,6 +1288,7 @@ test_patch_rotate_quaternion_compression_none()
 	pc_pointlist_free(pl);
 }
 
+
 #ifdef HAVE_LIBGHT
 static void
 test_patch_rotate_quaternion_compression_ght()
@@ -1251,9 +1304,9 @@ test_patch_rotate_quaternion_compression_ght()
 	// (1, 1, 1) is the point we're going to rotate
 	pl = pc_pointlist_make(1);
 	pt = pc_point_make(simplexyzschema);
-	pc_point_set_double_by_name(pt, "x", 1.0);
-	pc_point_set_double_by_name(pt, "y", 1.0);
-	pc_point_set_double_by_name(pt, "z", 1.0);
+	pc_point_set_x(pt, 1.0);
+	pc_point_set_y(pt, 1.0);
+	pc_point_set_z(pt, 1.0);
 	pc_pointlist_add_point(pl, pt);
 
 	// π/2 rotation around x axis
@@ -1265,15 +1318,15 @@ test_patch_rotate_quaternion_compression_ght()
 	qy = 0;
 	qz = 0;
 	patch = pc_patch_rotate_quaternion(
-			(PCPATCH *)patch_ght, qw, qx, qy, qz, "x", "y", "z");
+			(PCPATCH *)patch_ght, qw, qx, qy, qz, NULL, NULL, NULL);
 	CU_ASSERT(patch != NULL);
 	pt = pc_patch_pointn(patch, 1);
 	CU_ASSERT(pt != NULL);
-	pc_point_get_double_by_name(pt, "x", &v);
+	v = pc_point_get_x(pt);
 	CU_ASSERT(v == 1);
-	pc_point_get_double_by_name(pt, "y", &v);
+	v = pc_point_get_y(pt);
 	CU_ASSERT(v == -1);
-	pc_point_get_double_by_name(pt, "z", &v);
+	v = pc_point_get_z(pt);
 	CU_ASSERT(v == 1);
 	CU_ASSERT(patch->bounds.xmin == 1);
 	CU_ASSERT(patch->bounds.xmax == 1);
@@ -1292,15 +1345,15 @@ test_patch_rotate_quaternion_compression_ght()
 	qy = sin(angle / 2.);
 	qz = 0;
 	patch = pc_patch_rotate_quaternion(
-			(PCPATCH *)patch_ght, qw, qx, qy, qz, "x", "y", "z");
+			(PCPATCH *)patch_ght, qw, qx, qy, qz, NULL, NULL, NULL);
 	CU_ASSERT(patch != NULL);
 	pt = pc_patch_pointn(patch, 1);
 	CU_ASSERT(pt != NULL);
-	pc_point_get_double_by_name(pt, "x", &v);
+	v = pc_point_get_x(pt);
 	CU_ASSERT(v == 1);
-	pc_point_get_double_by_name(pt, "y", &v);
+	v = pc_point_get_y(pt);
 	CU_ASSERT(v == 1);
-	pc_point_get_double_by_name(pt, "z", &v);
+	v = pc_point_get_z(pt);
 	CU_ASSERT(v == -1);
 	CU_ASSERT(patch->bounds.xmin == 1);
 	CU_ASSERT(patch->bounds.xmax == 1);
@@ -1319,15 +1372,15 @@ test_patch_rotate_quaternion_compression_ght()
 	qy = 0;
 	qz = sin(angle / 2.);
 	patch = pc_patch_rotate_quaternion(
-			(PCPATCH *)patch_ght, qw, qx, qy, qz, "x", "y", "z");
+			(PCPATCH *)patch_ght, qw, qx, qy, qz, NULL, NULL, NULL);
 	CU_ASSERT(patch != NULL);
 	pt = pc_patch_pointn(patch, 1);
 	CU_ASSERT(pt != NULL);
-	pc_point_get_double_by_name(pt, "x", &v);
+	v = pc_point_get_x(pt);
 	CU_ASSERT(v == -1);
-	pc_point_get_double_by_name(pt, "y", &v);
+	v = pc_point_get_y(pt);
 	CU_ASSERT(v == 1);
-	pc_point_get_double_by_name(pt, "z", &v);
+	v = pc_point_get_z(pt);
 	CU_ASSERT(v == 1);
 	CU_ASSERT(patch->bounds.xmin == -1);
 	CU_ASSERT(patch->bounds.xmax == -1);
@@ -1350,6 +1403,55 @@ test_patch_translate_compression_none()
 	PCPOINT *pt;
 	double tx, ty, tz;
 	double v;
+
+	// (1, 1, 1) is the point we're going to translate
+	pl = pc_pointlist_make(1);
+	pt = pc_point_make(simplexyzschema);
+	pc_point_set_x(pt, 1.0);
+	pc_point_set_y(pt, 1.0);
+	pc_point_set_z(pt, 1.0);
+	pc_pointlist_add_point(pl, pt);
+
+	// (-1, 1, 2) translation
+	// expected result: (0, 2, 3)
+	patch_uncompressed = pc_patch_uncompressed_from_pointlist(pl);
+	tx = -1.0;
+	ty = 1.0;
+	tz = 2.0;
+	patch = pc_patch_translate(
+			(PCPATCH *)patch_uncompressed, tx, ty, tz, NULL, NULL, NULL);
+	CU_ASSERT(patch != NULL);
+	pt = pc_patch_pointn(patch, 1);
+	CU_ASSERT(pt != NULL);
+	v = pc_point_get_x(pt);
+	CU_ASSERT(v == 0);
+	v = pc_point_get_y(pt);
+	CU_ASSERT(v == 2);
+	v = pc_point_get_z(pt);
+	CU_ASSERT(v == 3);
+	CU_ASSERT(patch->bounds.xmin == 0);
+	CU_ASSERT(patch->bounds.xmax == 0);
+	CU_ASSERT(patch->bounds.ymin == 2);
+	CU_ASSERT(patch->bounds.ymax == 2);
+	pc_point_free(pt);
+	pc_patch_free(patch);
+	pc_patch_free((PCPATCH*)patch_uncompressed);
+
+	pc_pointlist_free(pl);
+}
+
+static void
+test_patch_translate_compression_none_with_dimension_names()
+{
+	PCPATCH *patch;
+	PCPATCH_UNCOMPRESSED *patch_uncompressed;
+	PCPOINTLIST *pl;
+	PCPOINT *pt;
+	double tx, ty, tz;
+	double v;
+
+	// this is the same test as test_patch_translate, but explict
+	// dimension names are passed to pc_patch_translate
 
 	// (1, 1, 1) is the point we're going to translate
 	pl = pc_pointlist_make(1);
@@ -1401,9 +1503,9 @@ test_patch_translate_compression_ght()
 	// (1, 1, 1) is the point we're going to translate
 	pl = pc_pointlist_make(1);
 	pt = pc_point_make(simplexyzschema);
-	pc_point_set_double_by_name(pt, "x", 1.0);
-	pc_point_set_double_by_name(pt, "y", 1.0);
-	pc_point_set_double_by_name(pt, "z", 1.0);
+	pc_point_set_x(pt, 1.0);
+	pc_point_set_y(pt, 1.0);
+	pc_point_set_z(pt, 1.0);
 	pc_pointlist_add_point(pl, pt);
 
 	// (-1, 1, 2) translation
@@ -1413,15 +1515,15 @@ test_patch_translate_compression_ght()
 	ty = 1.0;
 	tz = 2.0;
 	patch = pc_patch_translate(
-			(PCPATCH *)patch_ght, tx, ty, tz, "x", "y", "z");
+			(PCPATCH *)patch_ght, tx, ty, tz, NULL, NULL, NULL);
 	CU_ASSERT(patch != NULL);
 	pt = pc_patch_pointn(patch, 1);
 	CU_ASSERT(pt != NULL);
-	pc_point_get_double_by_name(pt, "x", &v);
+	v = pc_point_get_x(pt);
 	CU_ASSERT(v == 0);
-	pc_point_get_double_by_name(pt, "y", &v);
+	v = pc_point_get_y(pt);
 	CU_ASSERT(v == 2);
-	pc_point_get_double_by_name(pt, "z", &v);
+	v = pc_point_get_z(pt);
 	CU_ASSERT(v == 3);
 	CU_ASSERT(patch->bounds.xmin == 0);
 	CU_ASSERT(patch->bounds.xmax == 0);
@@ -1445,6 +1547,66 @@ test_patch_affine_compression_none()
 	double a, b, c, d, e, f, g, h, i;
 	double xoff, yoff, zoff;
 	double v;
+
+	// (1, 1, 1) is the point we're going to transform
+	pl = pc_pointlist_make(1);
+	pt = pc_point_make(simplexyzschema);
+	pc_point_set_x(pt, 1.0);
+	pc_point_set_y(pt, 1.0);
+	pc_point_set_z(pt, 1.0);
+	pc_pointlist_add_point(pl, pt);
+
+	// scale + translate
+	patch_uncompressed = pc_patch_uncompressed_from_pointlist(pl);
+	a = 2;
+	b = 0;
+	c = 0;
+	d = 0;
+	e = 2;
+	f = 0;
+	g = 0;
+	h = 0;
+	i = 2;
+	xoff = 1;
+	yoff = 1;
+	zoff = 1;
+	patch = pc_patch_affine(
+			(PCPATCH *)patch_uncompressed,
+			a, b, c, d, e, f, g, h, i, xoff, yoff, zoff,
+			NULL, NULL, NULL);
+	CU_ASSERT(patch != NULL);
+	pt = pc_patch_pointn(patch, 1);
+	CU_ASSERT(pt != NULL);
+	v = pc_point_get_x(pt);
+	CU_ASSERT(v == 3);
+	v = pc_point_get_y(pt);
+	CU_ASSERT(v == 3);
+	v = pc_point_get_z(pt);
+	CU_ASSERT(v == 3);
+	CU_ASSERT(patch->bounds.xmin == 3);
+	CU_ASSERT(patch->bounds.xmax == 3);
+	CU_ASSERT(patch->bounds.ymin == 3);
+	CU_ASSERT(patch->bounds.ymax == 3);
+	pc_point_free(pt);
+	pc_patch_free(patch);
+	pc_patch_free((PCPATCH*)patch_uncompressed);
+
+	pc_pointlist_free(pl);
+}
+
+static void
+test_patch_affine_compression_none_with_dimension_names()
+{
+	PCPATCH *patch;
+	PCPATCH_UNCOMPRESSED *patch_uncompressed;
+	PCPOINTLIST *pl;
+	PCPOINT *pt;
+	double a, b, c, d, e, f, g, h, i;
+	double xoff, yoff, zoff;
+	double v;
+
+	// this is the same test as test_patch_affine, but explict
+	// dimension names are passed to pc_patch_affine
 
 	// (1, 1, 1) is the point we're going to transform
 	pl = pc_pointlist_make(1);
@@ -1507,9 +1669,9 @@ test_patch_affine_compression_ght()
 	// (1, 1, 1) is the point we're going to transform
 	pl = pc_pointlist_make(1);
 	pt = pc_point_make(simplexyzschema);
-	pc_point_set_double_by_name(pt, "x", 1.0);
-	pc_point_set_double_by_name(pt, "y", 1.0);
-	pc_point_set_double_by_name(pt, "z", 1.0);
+	pc_point_set_x(pt, 1.0);
+	pc_point_set_y(pt, 1.0);
+	pc_point_set_z(pt, 1.0);
 	pc_pointlist_add_point(pl, pt);
 
 	// scale + translate
@@ -1529,15 +1691,15 @@ test_patch_affine_compression_ght()
 	patch = pc_patch_affine(
 			(PCPATCH *)patch_ght,
 			a, b, c, d, e, f, g, h, i, xoff, yoff, zoff,
-			"x", "y", "z");
+			NULL, NULL, NULL);
 	CU_ASSERT(patch != NULL);
 	pt = pc_patch_pointn(patch, 1);
 	CU_ASSERT(pt != NULL);
-	pc_point_get_double_by_name(pt, "x", &v);
+	v = pc_point_get_x(pt);
 	CU_ASSERT(v == 3);
-	pc_point_get_double_by_name(pt, "y", &v);
+	v = pc_point_get_y(pt);
 	CU_ASSERT(v == 3);
-	pc_point_get_double_by_name(pt, "z", &v);
+	v = pc_point_get_z(pt);
 	CU_ASSERT(v == 3);
 	CU_ASSERT(patch->bounds.xmin == 3);
 	CU_ASSERT(patch->bounds.xmax == 3);
@@ -1592,14 +1754,17 @@ CU_TestInfo patch_tests[] = {
 	PC_TEST(test_patch_set_schema_compression_lazperf),
 #endif
 	PC_TEST(test_patch_rotate_quaternion_compression_none),
+	PC_TEST(test_patch_rotate_quaternion_compression_none_with_dimension_names),
 #ifdef HAVE_LIBGHT
 	PC_TEST(test_patch_rotate_quaternion_compression_ght),
 #endif
 	PC_TEST(test_patch_translate_compression_none),
+	PC_TEST(test_patch_translate_compression_none_with_dimension_names),
 #ifdef HAVE_LIBGHT
 	PC_TEST(test_patch_translate_compression_ght),
 #endif
 	PC_TEST(test_patch_affine_compression_none),
+	PC_TEST(test_patch_affine_compression_none_with_dimension_names),
 #ifdef HAVE_LIBGHT
 	PC_TEST(test_patch_affine_compression_ght),
 #endif

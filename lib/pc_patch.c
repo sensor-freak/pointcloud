@@ -695,9 +695,36 @@ pc_patch_rotate_quaternion(
 
 	schema = uncompressed_patch->schema;
 
-	xdim = pc_schema_get_dimension_by_name(schema, xdimname);
-	ydim = pc_schema_get_dimension_by_name(schema, ydimname);
-	zdim = pc_schema_get_dimension_by_name(schema, zdimname);
+	if ( xdimname )
+	{
+		xdim = pc_schema_get_dimension_by_name(schema, xdimname);
+	}
+	else
+	{
+		assert(schema->x_position >= 0);
+		xdim = pc_schema_get_dimension(schema, schema->x_position);
+	}
+	if ( ydimname )
+	{
+		ydim = pc_schema_get_dimension_by_name(schema, ydimname);
+	}
+	else
+	{
+		assert(schema->y_position >= 0);
+		ydim = pc_schema_get_dimension(schema, schema->y_position);
+	}
+	if ( zdimname )
+	{
+		zdim = pc_schema_get_dimension_by_name(schema, zdimname);
+	}
+	else if ( schema->z_position >= 0 )
+	{
+		zdim = pc_schema_get_dimension(schema, schema->z_position);
+	}
+	else
+	{
+		zdim = NULL;
+	}
 
 	pointlist = pc_pointlist_from_uncompressed(uncompressed_patch);
 
@@ -710,13 +737,15 @@ pc_patch_rotate_quaternion(
 
 		pc_point_get_double(point, xdim, &vec[0]);
 		pc_point_get_double(point, ydim, &vec[1]);
-		pc_point_get_double(point, zdim, &vec[2]);
+		if ( zdim )
+			pc_point_get_double(point, zdim, &vec[2]);
 
 		pc_matrix_33_multiply_vector(rvec, qmat, vec);
 
 		pc_point_set_double(point, xdim, rvec[0]);
 		pc_point_set_double(point, ydim, rvec[1]);
-		pc_point_set_double(point, zdim, rvec[2]);
+		if ( zdim )
+			pc_point_set_double(point, zdim, rvec[2]);
 	}
 
 	pc_pointlist_free(pointlist);
@@ -767,9 +796,36 @@ pc_patch_translate(
 
 	schema = uncompressed_patch->schema;
 
-	xdim = pc_schema_get_dimension_by_name(schema, xdimname);
-	ydim = pc_schema_get_dimension_by_name(schema, ydimname);
-	zdim = pc_schema_get_dimension_by_name(schema, zdimname);
+	if ( xdimname )
+	{
+		xdim = pc_schema_get_dimension_by_name(schema, xdimname);
+	}
+	else
+	{
+		assert(schema->x_position >= 0);
+		xdim = pc_schema_get_dimension(schema, schema->x_position);
+	}
+	if ( ydimname )
+	{
+		ydim = pc_schema_get_dimension_by_name(schema, ydimname);
+	}
+	else
+	{
+		assert(schema->y_position >= 0);
+		ydim = pc_schema_get_dimension(schema, schema->y_position);
+	}
+	if ( zdimname )
+	{
+		zdim = pc_schema_get_dimension_by_name(schema, zdimname);
+	}
+	else if ( schema->z_position >= 0 )
+	{
+		zdim = pc_schema_get_dimension(schema, schema->z_position);
+	}
+	else
+	{
+		zdim = NULL;
+	}
 
 	pointlist = pc_pointlist_from_uncompressed(uncompressed_patch);
 
@@ -782,11 +838,13 @@ pc_patch_translate(
 
 		pc_point_get_double(point, xdim, &x);
 		pc_point_get_double(point, ydim, &y);
-		pc_point_get_double(point, zdim, &z);
+		if ( zdim )
+			pc_point_get_double(point, zdim, &z);
 
 		pc_point_set_double(point, xdim, x + tx);
 		pc_point_set_double(point, ydim, y + ty);
-		pc_point_set_double(point, zdim, z + tz);
+		if ( zdim )
+			pc_point_set_double(point, zdim, z + tz);
 	}
 
 	pc_pointlist_free(pointlist);
@@ -842,9 +900,36 @@ pc_patch_affine(
 
 	schema = uncompressed_patch->schema;
 
-	xdim = pc_schema_get_dimension_by_name(schema, xdimname);
-	ydim = pc_schema_get_dimension_by_name(schema, ydimname);
-	zdim = pc_schema_get_dimension_by_name(schema, zdimname);
+	if ( xdimname )
+	{
+		xdim = pc_schema_get_dimension_by_name(schema, xdimname);
+	}
+	else
+	{
+		assert(schema->x_position >= 0);
+		xdim = pc_schema_get_dimension(schema, schema->x_position);
+	}
+	if ( ydimname )
+	{
+		ydim = pc_schema_get_dimension_by_name(schema, ydimname);
+	}
+	else
+	{
+		assert(schema->y_position >= 0);
+		ydim = pc_schema_get_dimension(schema, schema->y_position);
+	}
+	if ( zdimname )
+	{
+		zdim = pc_schema_get_dimension_by_name(schema, zdimname);
+	}
+	else if ( schema->z_position >= 0 )
+	{
+		zdim = pc_schema_get_dimension(schema, schema->z_position);
+	}
+	else
+	{
+		zdim = NULL;
+	}
 
 	pointlist = pc_pointlist_from_uncompressed(uncompressed_patch);
 
@@ -857,13 +942,15 @@ pc_patch_affine(
 
 		pc_point_get_double(point, xdim, &vec[0]);
 		pc_point_get_double(point, ydim, &vec[1]);
-		pc_point_get_double(point, zdim, &vec[2]);
+		if ( zdim )
+			pc_point_get_double(point, zdim, &vec[2]);
 
 		pc_matrix_43_transform_affine(rvec, amat, vec);
 
 		pc_point_set_double(point, xdim, rvec[0]);
 		pc_point_set_double(point, ydim, rvec[1]);
-		pc_point_set_double(point, zdim, rvec[2]);
+		if ( zdim )
+			pc_point_set_double(point, zdim, rvec[2]);
 	}
 
 	pc_pointlist_free(pointlist);
