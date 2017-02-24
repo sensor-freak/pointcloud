@@ -221,6 +221,38 @@ test_point_rotate_quaternion()
 }
 
 static void
+test_point_rotate_quaternion_with_dimension_names()
+{
+	PCPOINT *pt;
+	double angle;
+	double qw, qx, qy, qz;
+	double v;
+
+	// this is the same test as test_point_rotate_quaternion, but explict
+	// dimension names are passed to pc_point_rotate_quaternion
+
+	// π/2 rotation of point (1, 1, 1) around z axis
+	// expected result: (-1, 1, 1)
+	pt = pc_point_make(schema);
+	pc_point_set_double_by_name(pt, "x", 1.0);
+	pc_point_set_double_by_name(pt, "y", 1.0);
+	pc_point_set_double_by_name(pt, "z", 1.0);
+	angle = M_PI_2;
+	qw = cos(angle / 2.);
+	qx = 0;
+	qy = 0;
+	qz = sin(angle / 2.);
+	pc_point_rotate_quaternion(pt, qw, qx, qy, qz, "x", "y", "z");
+	pc_point_get_double_by_name(pt, "x", &v);
+	CU_ASSERT(v == -1);
+	pc_point_get_double_by_name(pt, "y", &v);
+	CU_ASSERT(v == 1);
+	pc_point_get_double_by_name(pt, "z", &v);
+	CU_ASSERT(v == 1);
+	pc_point_free(pt);
+}
+
+static void
 test_point_translate()
 {
 	PCPOINT *pt;
@@ -242,6 +274,35 @@ test_point_translate()
 	v = pc_point_get_y(pt);
 	CU_ASSERT(v == 2);
 	v = pc_point_get_z(pt);
+	CU_ASSERT(v == 3);
+	pc_point_free(pt);
+}
+
+static void
+test_point_translate_with_dimension_names()
+{
+	PCPOINT *pt;
+	double tx, ty, tz;
+	double v;
+
+	// this is the same test as test_point_translate, but explict
+	// dimension names are passed to pc_point_translate
+
+	// translation of point (1, 1, 1) by (-1, 1, 2)
+	// expected result: (0, 2, 3)
+	pt = pc_point_make(schema);
+	pc_point_set_double_by_name(pt, "x", 1.0);
+	pc_point_set_double_by_name(pt, "y", 1.0);
+	pc_point_set_double_by_name(pt, "z", 1.0);
+	tx = -1.0;
+	ty = 1.0;
+	tz = 2.0;
+	pc_point_translate(pt, tx, ty, tz, "x", "y", "z");
+	pc_point_get_double_by_name(pt, "x", &v);
+	CU_ASSERT(v == 0);
+	pc_point_get_double_by_name(pt, "y", &v);
+	CU_ASSERT(v == 2);
+	pc_point_get_double_by_name(pt, "z", &v);
 	CU_ASSERT(v == 3);
 	pc_point_free(pt);
 }
@@ -284,14 +345,58 @@ test_point_affine()
 	pc_point_free(pt);
 }
 
+static void
+test_point_affine_with_dimension_names()
+{
+	PCPOINT *pt;
+	double a, b, c, d, e, f, g, h, i;
+	double xoff, yoff, zoff;
+	double v;
+
+	// this is the same test as test_point_affine, but explict
+	// dimension names are passed to pc_point_affine
+
+	// scale + translate
+	pt = pc_point_make(schema);
+	pc_point_set_double_by_name(pt, "x", 1.0);
+	pc_point_set_double_by_name(pt, "y", 1.0);
+	pc_point_set_double_by_name(pt, "z", 1.0);
+	a = 2;
+	b = 0;
+	c = 0;
+	d = 0;
+	e = 2;
+	f = 0;
+	g = 0;
+	h = 0;
+	i = 2;
+	xoff = 1;
+	yoff = 1;
+	zoff = 1;
+	pc_point_affine(
+			pt,
+			a, b, c, d, e, f, g, h, i, xoff, yoff, zoff,
+			"x", "y", "z");
+	pc_point_get_double_by_name(pt, "x", &v);
+	CU_ASSERT(v == 3);
+	pc_point_get_double_by_name(pt, "y", &v);
+	CU_ASSERT(v == 3);
+	pc_point_get_double_by_name(pt, "z", &v);
+	CU_ASSERT(v == 3);
+	pc_point_free(pt);
+}
+
 /* REGISTER ***********************************************************/
 
 CU_TestInfo point_tests[] = {
 	PC_TEST(test_point_hex_inout),
 	PC_TEST(test_point_access),
 	PC_TEST(test_point_rotate_quaternion),
+	PC_TEST(test_point_rotate_quaternion_with_dimension_names),
 	PC_TEST(test_point_translate),
+	PC_TEST(test_point_translate_with_dimension_names),
 	PC_TEST(test_point_affine),
+	PC_TEST(test_point_affine_with_dimension_names),
 	CU_TEST_INFO_NULL
 };
 
