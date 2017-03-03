@@ -492,3 +492,10 @@ CREATE OR REPLACE FUNCTION PC_Explode(p pcpatch)
 --  SQL Utility Functions
 -------------------------------------------------------------------
 
+-------------------------------------------------------------------
+--  Frustum Functions
+-------------------------------------------------------------------
+
+CREATE OR REPLACE FUNCTION PC_FrustumAsEWKB(p pcpatch)
+	RETURNS bytea AS 'MODULE_PATHNAME', 'pcfrustum_from_patch_as_bytea'
+	LANGUAGE 'c' IMMUTABLE STRICT;

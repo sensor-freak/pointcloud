@@ -277,6 +277,11 @@ SELECT PC_Get(PC_PatchAvg(pa)) FROM pa_test_dim order by 1 limit 1;
 
 SELECT PC_Summary(pa) summary FROM pa_test_dim order by 1 limit 1;
 
+CREATE EXTENSION postgis;
+CREATE EXTENSION pointcloud_postgis;
+SELECT st_astext(geometry(pa)),st_astext(PC_FrustumAsGeom(pa)) FROM pa_test_dim;
+
+--SELECT PC_Envelope(pa),PC_FrustumAsEWKB(pa) FROM pa_test_dim;
 
 --DROP TABLE pts_collection;
 DROP TABLE pt_test;

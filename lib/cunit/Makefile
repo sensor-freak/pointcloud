@@ -17,6 +17,7 @@ OBJS =	\
 	cu_pc_patch_ght.o \
 	cu_pc_patch_lazperf.o \
 	cu_pc_sort.o \
+	cu_pc_frustum.o \
 	cu_pc_matrix.o
 
 ifeq ($(CUNIT_LDFLAGS),)

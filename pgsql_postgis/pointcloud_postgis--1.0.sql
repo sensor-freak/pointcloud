@@ -37,6 +37,17 @@ CREATE OR REPLACE FUNCTION geometry(pcpoint)
 
 CREATE CAST (pcpoint AS geometry) WITH FUNCTION geometry(pcpoint);
 
+-----------------------------------------------------------------------------
+-- Cast from pcfrustum to polyhedral surface
+--
+CREATE OR REPLACE FUNCTION PC_FrustumAsGeom(pcpatch)
+	RETURNS geometry AS
+	$$
+		SELECT ST_GeomFromEWKB(PC_FrustumAsEWKB($1))
+	$$
+	LANGUAGE 'sql';
+
+
 
 -----------------------------------------------------------------------------
 -- Function to overlap polygon on patch
@@ -54,4 +65,3 @@ CREATE OR REPLACE FUNCTION PC_Intersects(geometry, pcpatch)
 		SELECT PC_Intersects($2, $1)
 	$$
 	LANGUAGE 'sql';
-
