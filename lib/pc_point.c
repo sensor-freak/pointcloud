@@ -599,3 +599,68 @@ pc_point_affine(
 	if ( zdim )
 		pc_point_set_double(point, zdim, rvec[2]);
 }
+
+/**
+* Apply a projective/perspective transformation to a point.
+*/
+void
+pc_point_projective(
+	PCPOINT *point,
+	double a, double b, double c, double d,
+	double e, double f, double g, double h,
+	double i, double j, double k, double l,
+	double m, double n, double o, double p,
+	const char *xdimname, const char *ydimname, const char *zdimname)
+{
+	const PCSCHEMA *schema;
+	const PCDIMENSION *xdim, *ydim, *zdim;
+	PCMAT44 amat;
+	PCVEC3 vec, rvec;
+
+	pc_matrix_44_set(amat, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p);
+
+	schema = point->schema;
+
+	if ( xdimname )
+	{
+		xdim = pc_schema_get_dimension_by_name(schema, xdimname);
+	}
+	else
+	{
+		assert(schema->x_position >= 0);
+		xdim = pc_schema_get_dimension(schema, schema->x_position);
+	}
+	if ( ydimname )
+	{
+		ydim = pc_schema_get_dimension_by_name(schema, ydimname);
+	}
+	else
+	{
+		assert(schema->y_position >= 0);
+		ydim = pc_schema_get_dimension(schema, schema->y_position);
+	}
+	if ( zdimname )
+	{
+		zdim = pc_schema_get_dimension_by_name(schema, zdimname);
+	}
+	else if ( schema->z_position >= 0 )
+	{
+		zdim = pc_schema_get_dimension(schema, schema->z_position);
+	}
+	else
+	{
+		zdim = NULL;
+	}
+
+	pc_point_get_double(point, xdim, &vec[0]);
+	pc_point_get_double(point, ydim, &vec[1]);
+	if ( zdim )
+		pc_point_get_double(point, zdim, &vec[2]);
+
+	pc_matrix_44_transform_projective(rvec, amat, vec);
+
+	pc_point_set_double(point, xdim, rvec[0]);
+	pc_point_set_double(point, ydim, rvec[1]);
+	if ( zdim )
+		pc_point_set_double(point, zdim, rvec[2]);
+}

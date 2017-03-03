@@ -1713,6 +1713,152 @@ test_patch_affine_compression_ght()
 }
 #endif	/* HAVE_LIBGHT */
 
+static void
+test_patch_projective_compression_none()
+{
+	PCPATCH *patch;
+	PCPATCH_UNCOMPRESSED *patch_uncompressed;
+	PCPOINTLIST *pl;
+	PCPOINT *pt;
+	double v;
+
+	// simple perspective projection which uses the origin as the center
+	// of the projection, and z = 1 as the image plane
+
+	// (1, 1, -2) is the point we're going to transform
+	pl = pc_pointlist_make(1);
+	pt = pc_point_make(simplexyzschema);
+	pc_point_set_x(pt, 1.0);
+	pc_point_set_y(pt, 1.0);
+	pc_point_set_z(pt, -2.0);
+	pc_pointlist_add_point(pl, pt);
+
+	patch_uncompressed = pc_patch_uncompressed_from_pointlist(pl);
+	patch = pc_patch_projective((PCPATCH *)patch_uncompressed,
+			1, 0, 0, 0,
+			0, 1, 0, 0,
+			0, 0, 1, 0,
+			0, 0, 1, 0,
+			NULL, NULL, NULL);
+	CU_ASSERT(patch != NULL);
+	pt = pc_patch_pointn(patch, 1);
+	CU_ASSERT(pt != NULL);
+	v = pc_point_get_x(pt);
+	CU_ASSERT(v == -0.5);
+	v = pc_point_get_y(pt);
+	CU_ASSERT(v == -0.5);
+	v = pc_point_get_z(pt);
+	CU_ASSERT(v == 1);
+	CU_ASSERT(patch->bounds.xmin == -0.5);
+	CU_ASSERT(patch->bounds.xmax == -0.5);
+	CU_ASSERT(patch->bounds.ymin == -0.5);
+	CU_ASSERT(patch->bounds.ymax == -0.5);
+	pc_point_free(pt);
+	pc_patch_free(patch);
+	pc_patch_free((PCPATCH*)patch_uncompressed);
+
+	pc_pointlist_free(pl);
+}
+
+static void
+test_patch_projective_compression_none_with_dimension_names()
+{
+	PCPATCH *patch;
+	PCPATCH_UNCOMPRESSED *patch_uncompressed;
+	PCPOINTLIST *pl;
+	PCPOINT *pt;
+	double v;
+
+	// simple perspective projection which uses the origin as the center
+	// of the projection, and z = 1 as the image plane
+
+	// this is the same test as test_patch_projective, but explict
+	// dimension names are passed to pc_patch_projective
+
+	// (1, 1, -2) is the point we're going to transform
+	pl = pc_pointlist_make(1);
+	pt = pc_point_make(simplexyzschema);
+	pc_point_set_double_by_name(pt, "x", 1.0);
+	pc_point_set_double_by_name(pt, "y", 1.0);
+	pc_point_set_double_by_name(pt, "z", -2.0);
+	pc_pointlist_add_point(pl, pt);
+
+	patch_uncompressed = pc_patch_uncompressed_from_pointlist(pl);
+	patch = pc_patch_projective((PCPATCH *)patch_uncompressed,
+			1, 0, 0, 0,
+			0, 1, 0, 0,
+			0, 0, 1, 0,
+			0, 0, 1, 0,
+			"x", "y", "z");
+	CU_ASSERT(patch != NULL);
+	pt = pc_patch_pointn(patch, 1);
+	CU_ASSERT(pt != NULL);
+	pc_point_get_double_by_name(pt, "x", &v);
+	CU_ASSERT(v == -0.5);
+	pc_point_get_double_by_name(pt, "y", &v);
+	CU_ASSERT(v == -0.5);
+	pc_point_get_double_by_name(pt, "z", &v);
+	CU_ASSERT(v == 1);
+	CU_ASSERT(patch->bounds.xmin == -0.5);
+	CU_ASSERT(patch->bounds.xmax == -0.5);
+	CU_ASSERT(patch->bounds.ymin == -0.5);
+	CU_ASSERT(patch->bounds.ymax == -0.5);
+	pc_point_free(pt);
+	pc_patch_free(patch);
+	pc_patch_free((PCPATCH*)patch_uncompressed);
+
+	pc_pointlist_free(pl);
+}
+
+#ifdef HAVE_LIBGHT
+static void
+test_patch_projective_compression_ght()
+{
+	PCPATCH *patch;
+	PCPATCH_GHT *patch_ght;
+	PCPOINTLIST *pl;
+	PCPOINT *pt;
+	double v;
+
+	// simple perspective projection which uses the origin as the center
+	// of the projection, and z = 1 as the image plane
+
+	// (1, 1, -2) is the point we're going to transform
+	pl = pc_pointlist_make(1);
+	pt = pc_point_make(simplexyzschema);
+	pc_point_set_x(pt, 1.0);
+	pc_point_set_y(pt, 1.0);
+	pc_point_set_z(pt, -2.0);
+	pc_pointlist_add_point(pl, pt);
+
+	patch_ght = pc_patch_ght_from_pointlist(pl);
+	patch = pc_patch_projective((PCPATCH *)patch_ght,
+			1, 0, 0, 0,
+			0, 1, 0, 0,
+			0, 0, 1, 0,
+			0, 0, 1, 0,
+			NULL, NULL, NULL);
+	CU_ASSERT(patch != NULL);
+	pt = pc_patch_pointn(patch, 1);
+	CU_ASSERT(pt != NULL);
+	v = pc_point_get_x(pt);
+	CU_ASSERT(v == -0.5);
+	v = pc_point_get_y(pt);
+	CU_ASSERT(v == -0.5);
+	v = pc_point_get_z(pt);
+	CU_ASSERT(v == 1);
+	CU_ASSERT(patch->bounds.xmin == -0.5);
+	CU_ASSERT(patch->bounds.xmax == -0.5);
+	CU_ASSERT(patch->bounds.ymin == -0.5);
+	CU_ASSERT(patch->bounds.ymax == -0.5);
+	pc_point_free(pt);
+	pc_patch_free(patch);
+	pc_patch_free((PCPATCH*)patch_ght);
+
+	pc_pointlist_free(pl);
+}
+#endif	/* HAVE_LIBGHT */
+
 /* REGISTER ***********************************************************/
 
 CU_TestInfo patch_tests[] = {
@@ -1767,6 +1913,11 @@ CU_TestInfo patch_tests[] = {
 	PC_TEST(test_patch_affine_compression_none_with_dimension_names),
 #ifdef HAVE_LIBGHT
 	PC_TEST(test_patch_affine_compression_ght),
+#endif
+	PC_TEST(test_patch_projective_compression_none),
+	PC_TEST(test_patch_projective_compression_none_with_dimension_names),
+#ifdef HAVE_LIBGHT
+	PC_TEST(test_patch_projective_compression_ght),
 #endif
 	CU_TEST_INFO_NULL
 };
