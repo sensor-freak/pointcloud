@@ -167,6 +167,7 @@ typedef double PCVEC4[4];
 typedef double PCMAT33[9];
 typedef double PCMAT43[12];
 typedef double PCMAT44[16];
+typedef PCVEC3 PCBOX3[2];
 
 typedef struct
 {
@@ -510,5 +511,8 @@ PCPATCH *pc_patch_projective(const PCPATCH *patch, double a, double b, double c,
 
 /** apply a projective transformation to a point */
 void pc_point_projective(PCPOINT *point, double a, double b, double c, double d, double e, double f, double g, double h, double i, double j, double k, double l, double m, double n, double o, double p, const char *xdimname, const char *ydimname, const char *zdimname);
+
+/** 3D volume **/
+double pc_box_volume(const PCBOX3 b);
 
 #endif /* _PC_API_H */

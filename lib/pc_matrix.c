@@ -368,6 +368,32 @@ pc_vector_3_from_homogeneous(PCVEC3 res, const PCVEC4 v)
 #define PCVEC3ADD(x,y) (x)[0]+(y)[0], (x)[1]+(y)[1], (x)[2]+(y)[2]
 #define PCVEC4SUB(x,y) (x)[0]-(y)[0], (x)[1]-(y)[1], (x)[2]-(y)[2], (x)[3]-(y)[3]
 #define PCVEC4ADD(x,y) (x)[0]+(y)[0], (x)[1]+(y)[1], (x)[2]+(y)[2], (x)[3]+(y)[3]
+#define PCBOX3CORNERS(b) \
+	{ b[0][0], b[0][1], b[0][2] }, \
+	{ b[1][0], b[0][1], b[0][2] }, \
+	{ b[0][0], b[1][1], b[0][2] }, \
+	{ b[1][0], b[1][1], b[0][2] }, \
+	{ b[0][0], b[0][1], b[1][2] }, \
+	{ b[1][0], b[0][1], b[1][2] }, \
+	{ b[0][0], b[1][1], b[1][2] }, \
+	{ b[1][0], b[1][1], b[1][2] }
+
+
+int
+pc_box_from_vector_3_array(PCBOX3 res,  PCVEC3 * const p, size_t n)
+{
+	int i;
+	if (n==0)
+		return PC_FAILURE;
+	pc_vector_3_copy(res[0],p[0]);
+	pc_vector_3_copy(res[1],p[0]);
+	for( i = 1; i < n; ++i )
+	{
+		pc_vector_3_min(res[0],res[0],p[i]);
+		pc_vector_3_max(res[1],res[1],p[i]);
+	}
+	return PC_SUCCESS;
+}
 
 /**
 * Apply a projective transformation to the vector vec and store the resulting
@@ -389,6 +415,19 @@ pc_matrix_44_transform_projective_vector_4(PCVEC3 res, const PCMAT44 mat, const 
 	return pc_vector_3_from_homogeneous(res,hres);
 }
 
+int
+pc_box_projective(PCBOX3 res, const PCMAT44 mat, PCBOX3 b)
+{
+	PCVEC3 p[] = { PCBOX3CORNERS(b) };
+	int i;
+	for( i = 0; i < 8; ++i )
+	{
+		if(!pc_matrix_44_transform_projective_vector_3(p[i],mat,p[i]))
+			return PC_FAILURE;
+	}
+	return pc_box_from_vector_3_array(res,p,8);
+}
+
 /**
 * vector3 normalization
 */
@@ -406,6 +445,13 @@ pc_vector_3_normalize(PCVEC3 res, const PCVEC3 vec)
 	return PC_SUCCESS;
 }
 
+int
+pc_box_normalize(PCBOX3 res, const PCBOX3 b)
+{
+	pcwarn("%s: not implemented yet...", __func__);
+	return PC_FAILURE;
+}
+
 /**
 * Cartesian <- Spherical
 */
@@ -421,6 +467,13 @@ pc_vector_3_cartesian_from_spherical(PCVEC3 res, const PCVEC3 vec)
 	return PC_SUCCESS;
 }
 
+int
+pc_box_cartesian_from_spherical(PCBOX3 res, const PCBOX3 b)
+{
+	pcwarn("%s: not implemented yet...", __func__);
+	return PC_FAILURE;
+}
+
 /**
 * Spherical <- Cartesian
 */
@@ -432,6 +485,13 @@ pc_vector_3_spherical_from_cartesian(PCVEC3 res, const PCVEC3 vec)
 	res[1] = atan2(vec[1],vec[0]);
 	res[2] = asin (vec[2]/res[0]);
 	return PC_SUCCESS;
+}
+
+int
+pc_box_spherical_from_cartesian(PCBOX3 res, const PCBOX3 b)
+{
+	pcwarn("%s: not implemented yet...", __func__);
+	return PC_FAILURE;
 }
 
 /**
@@ -452,6 +512,78 @@ pc_vector_3_distorsion(PCVEC3 res, const PCDISTORSION *d, const PCVEC3 vec)
 	res[0] = vec[0] + dr*v[0];
 	res[1] = vec[1] + dr*v[1];
 	res[2] = vec[2];
+	return PC_SUCCESS;
+}
+
+int
+pc_box_transform_distorsion(PCBOX3 res, const PCDISTORSION *d, const PCBOX3 b)
+{
+	double c0 = d->c[0], c1 = d->c[1], c2 = d->c[2];
+	// roots (xp,xm) of P' = c0 + 2 c1 X + 3 c2 X^2
+	double delta = c1*c1-3*c0*c2;
+	double xp, xm, Pp, Pm;
+	if ( delta > 0 )
+	{
+		double sqrtdelta = sqrt(delta);
+		xp = (-c1+sqrtdelta)/(3*c2);
+		xm = (-c1-sqrtdelta)/(3*c2);
+		// values of extrema of P = c0 X + c1 X^2 + c2 X^3
+		Pp = xp * ( c0 + xp * ( c1 + xp * c2 ) );
+		Pm = xm * ( c0 + xm * ( c1 + xm * c2 ) );
+	}
+
+	// distances to PPS along axes
+	double r0[] = {
+		b[1][0] - d->pps[0],
+		b[1][1] - d->pps[1],
+		b[0][0] - d->pps[0],
+		b[0][1] - d->pps[1]
+	};
+	// < 0 if pps is inside box horizontaly and verticaly
+	double inside[] = { r0[0]*r0[2], r0[1]*r0[3] };
+	// squared distances to PPS along axes
+	double r20[4];
+	// squared distances to PPS at corners
+	double r2c[4];
+	// values of P at corners
+	double Pc[4];
+	// max values of P(corner) for each edge
+	double Pe[4];
+	int i;
+	for( i = 0; i < 4; ++i )
+	{
+		r20[i] = r0[i] * r0[i];
+		r2c[i] = r20[i] + r20[(i+3)%4];
+		Pc[i] = r2c[i] * ( c0 + r2c[i] * ( c1 + r2c[i] * c2 ) );
+	}
+	for( i = 0; i < 4; ++i )
+	{
+		if(r2c[i] > d->r2max)
+			return PC_FAILURE;
+
+		Pe[i] = fmax(Pc[i],Pc[(i+1)%4]);
+		if(inside[i&1] < 0)
+		{
+			double P0 = r20[i] * ( c0 + r20[i] * ( c1 + r20[i] * c2 ) );
+			Pe[i] = fmax(Pe[i], P0);
+		}
+		if(delta>0)
+		{
+			double r2min = (inside[i&1] < 0) ? r20[i] : fmin(r2c[i], r2c[(i+1)%4]);
+			double r2max = fmax(r2c[i], r2c[(i+1)%4]);
+			if( r2min < xp && xp < r2max )
+				Pe[i] = fmax(Pe[i], Pp);
+			if( r2min < xm && xm < r2max )
+				Pe[i] = fmax(Pe[i], Pm);
+		}
+	}
+	res[1][0] = b[1][0] + Pe[0] * r0[0];
+	res[1][1] = b[1][1] + Pe[1] * r0[1];
+	res[0][0] = b[0][0] + Pe[2] * r0[2];
+	res[0][1] = b[0][1] + Pe[3] * r0[3];
+	res[0][2] = b[0][2];
+	res[1][2] = b[1][2];
+
 	return PC_SUCCESS;
 }
 
@@ -494,4 +626,125 @@ pc_vector_3_undistorsion(PCVEC3 res, const PCDISTORSION *d, const PCVEC3 vec)
 		if(t<0) t=0;
 	}
 	return PC_FAILURE;
+}
+
+int
+pc_box_transform_undistorsion(PCBOX3 res, const PCDISTORSION *d, const PCBOX3 b)
+{
+	pcwarn("%s: current implementation is not conservative (bbox of 8points)...", __func__);
+	double c[2] = { PCVEC2MID(b[0],b[1]) };
+	PCVEC3 q[8];
+	PCVEC3 p[8] = {
+		{ b[0][0], b[0][1], b[0][2]},
+		{ b[1][0], b[0][1], b[0][2]},
+		{ b[0][0], b[1][1], b[1][2]},
+		{ b[1][0], b[1][1], b[1][2]},
+		{ c[0],    b[0][1], b[0][2]},
+		{ c[0],    b[1][1], b[0][2]},
+		{ b[0][0], c[1],    b[0][2]},
+		{ b[1][0], c[1],    b[0][2]}
+	};
+	int i;
+	for( i = 0; i < 8; ++i )
+		if(!pc_vector_3_undistorsion(q[i],d,p[i]))
+			return PC_FAILURE;
+
+	return pc_box_from_vector_3_array(res,q,8);
+}
+
+/**
+* EWKB export
+*/
+
+uint8_t *
+pc_frustum_corners_to_geometry_wkb( const PCVEC3 p[8], uint32_t srid, size_t *wkbsize)
+{
+	static uint32_t srid_mask = 0x20000000;
+	static uint32_t z_mask = 0x80000000;
+	uint32_t wkbtype = 15 | z_mask; /* WKB POLYHEDRALSURFACETYPE Z */
+	uint32_t wkbpolyztype = 3 | z_mask; /* WKB POLYGONTYPE Z */
+	int32_t nrings = 1;
+	int32_t npoints = 5;
+	int32_t ngeoms = 6;
+	size_t pointsize = 3*sizeof(double);
+	size_t polysize = 1 + 4 + 4 + 4 + npoints * pointsize;
+	size_t size = 1 + 4 + 4 + ngeoms*polysize; /* endian + type + 6 quads */
+	uint8_t *wkb, *ptr;
+	uint32_t i,j;
+
+	// should we care about face orientation ?
+	int face[6][5] = {
+		{0,2,4,6,0}, // -X
+		{1,3,5,7,1}, // +X
+		{0,1,4,5,0}, // -Y
+		{2,3,6,7,2}, // +Y
+		{0,1,2,3,0}, // -Z
+		{4,5,6,7,4}  // +Z
+	};
+
+	if ( srid != 0 )
+	{
+		wkbtype |= srid_mask;
+		size += 4;
+	}
+
+	wkb = pcalloc(size);
+	ptr = wkb;
+
+	ptr[0] = machine_endian(); /* Endian flag */
+	ptr += 1;
+
+	memcpy(ptr, &wkbtype, 4); /* WKB type */
+	ptr += 4;
+
+	if ( srid != 0 )
+	{
+		memcpy(ptr, &srid, 4); /* SRID */
+		ptr += 4;
+	}
+
+	memcpy(ptr, &ngeoms, 4); /* 6 */
+	ptr += 4;
+
+	for( i = 0; i < ngeoms; ++i )
+	{
+		ptr[0] = wkb[0]; /* Endian flag */
+		ptr += 1;
+
+		memcpy(ptr, &wkbpolyztype, 4); /* WKB POLYGONTYPE type */
+		ptr += 4;
+
+		memcpy(ptr, &nrings, 4); /* 1 */
+		ptr += 4;
+
+		memcpy(ptr, &npoints, 4); /* 4 */
+		ptr += 4;
+
+		for( j = 0; j < npoints; ++j )
+		{
+			memcpy(ptr, p[face[i][j]], pointsize);
+			ptr += pointsize;
+		}
+	}
+
+	if ( wkbsize ) *wkbsize = size;
+	return wkb;
+}
+
+//should we add a srid to PCBOX3 ?
+uint8_t *
+pc_box_to_geometry_wkb(const PCBOX3 b, uint32_t srid, size_t *wkbsize)
+{
+	const PCVEC3 p[] = { PCBOX3CORNERS(b) };
+	return pc_frustum_corners_to_geometry_wkb(p,srid,wkbsize);
+}
+
+/*
+* Volume
+*/
+
+double pc_box_volume(const PCBOX3 b)
+{
+	PCVEC3 s = { PCVEC3SUB(b[1],b[0]) };
+	return s[0]*s[1]*s[2];
 }
