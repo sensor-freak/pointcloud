@@ -13,6 +13,13 @@
 #include "pc_pgsql.h"	   /* Common PgSQL support for our type */
 
 Datum pcpatch_rotate_quaternion(PG_FUNCTION_ARGS);
+Datum pcpatch_translate(PG_FUNCTION_ARGS);
+Datum pcpatch_affine(PG_FUNCTION_ARGS);
+Datum pcpatch_projective(PG_FUNCTION_ARGS);
+Datum pcpoint_rotate_quaternion(PG_FUNCTION_ARGS);
+Datum pcpoint_translate(PG_FUNCTION_ARGS);
+Datum pcpoint_affine(PG_FUNCTION_ARGS);
+Datum pcpoint_projective(PG_FUNCTION_ARGS);
 
 /**
 * Rotate a patch based on a rotation quaternion
