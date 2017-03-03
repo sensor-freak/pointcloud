@@ -2,7 +2,7 @@
 # test suite build
 #------------------------------------------------------------------------------
 
-set (PC_TEST_SOURCES 
+set (PC_TEST_SOURCES
   cu_pc_patch_ght.c
   cu_pc_point.c
   cu_pc_bytes.c
@@ -11,6 +11,7 @@ set (PC_TEST_SOURCES
   cu_pc_patch.c
   cu_pc_patch_lazperf.c
   cu_pc_sort.c
+  cu_pc_matrix.c
   cu_tester.c
   )
 
@@ -32,4 +33,3 @@ add_executable(cu_tester ${PC_TEST_SOURCES} ${PC_TEST_HEADERS})
 target_link_libraries (cu_tester libpc-static ${CUNIT_LIBRARIES})
 
 add_test(cu_tester cu_tester)
-

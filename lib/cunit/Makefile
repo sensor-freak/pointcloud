@@ -16,7 +16,8 @@ OBJS =	\
 	cu_pc_patch.o \
 	cu_pc_patch_ght.o \
 	cu_pc_patch_lazperf.o \
-	cu_pc_sort.o
+	cu_pc_sort.o \
+	cu_pc_matrix.o
 
 ifeq ($(CUNIT_LDFLAGS),)
 # No cunit? Emit message and continue
@@ -53,4 +54,3 @@ $(EXE): $(OBJS) ../$(LIB_A) ../$(LIB_A_LAZPERF)
 clean:
 	@rm -f $(OBJS)
 	@rm -f $(EXE)
-
