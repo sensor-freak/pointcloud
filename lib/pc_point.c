@@ -657,7 +657,7 @@ pc_point_projective(
 	if ( zdim )
 		pc_point_get_double(point, zdim, &vec[2]);
 
-	pc_matrix_44_transform_projective(rvec, amat, vec);
+	pc_matrix_44_transform_projective_vector_3(rvec, amat, vec);
 
 	pc_point_set_double(point, xdim, rvec[0]);
 	pc_point_set_double(point, ydim, rvec[1]);
