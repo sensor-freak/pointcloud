@@ -17,8 +17,10 @@ OBJS =	\
 	cu_pc_patch_ght.o \
 	cu_pc_patch_lazperf.o \
 	cu_pc_sort.o \
-	cu_pc_frustum.o \
-	cu_pc_matrix.o
+	li3ds/cu_pc_li3ds_frustum.o \
+	li3ds/cu_pc_li3ds_matrix.o \
+	li3ds/cu_pc_li3ds_patch.o \
+	li3ds/cu_pc_li3ds_point.o
 
 ifeq ($(CUNIT_LDFLAGS),)
 # No cunit? Emit message and continue

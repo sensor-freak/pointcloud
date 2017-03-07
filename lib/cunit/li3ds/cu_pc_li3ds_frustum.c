@@ -1,4 +1,3 @@
-
 /***********************************************************************
 * cu_pc_frustum.c
 *
@@ -9,7 +8,7 @@
 ***********************************************************************/
 
 #include "CUnit/Basic.h"
-#include "cu_tester.h"
+#include "../cu_tester.h"
 
 /* GLOBALS ************************************************************/
 
@@ -151,7 +150,7 @@ test_frustum_volume()
 
 /* REGISTER ***********************************************************/
 
-CU_TestInfo frustum_tests[] = {
+CU_TestInfo li3ds_frustum_tests[] = {
 	PC_TEST(test_frustum_wkb),
 	PC_TEST(test_frustum_is_valid),
 	PC_TEST(test_frustum_intersects),
@@ -160,9 +159,9 @@ CU_TestInfo frustum_tests[] = {
 	CU_TEST_INFO_NULL
 };
 
-CU_SuiteInfo frustum_suite = {
-	.pName = "frustum",
+CU_SuiteInfo li3ds_frustum_suite = {
+	.pName = "li3ds_frustum",
 	.pInitFunc = init_suite,
 	.pCleanupFunc = clean_suite,
-	.pTests = frustum_tests
+	.pTests = li3ds_frustum_tests
 };

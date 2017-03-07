@@ -9,7 +9,7 @@
 ***********************************************************************/
 
 #include "CUnit/Basic.h"
-#include "cu_tester.h"
+#include "../cu_tester.h"
 
 /* GLOBALS ************************************************************/
 
@@ -86,16 +86,16 @@ test_matrix_inverse()
 
 /* REGISTER ***********************************************************/
 
-CU_TestInfo matrix_tests[] = {
+CU_TestInfo li3ds_matrix_tests[] = {
 	PC_TEST(test_matrix_determinant),
 	PC_TEST(test_matrix_adjugate),
 	PC_TEST(test_matrix_inverse),
 	CU_TEST_INFO_NULL
 };
 
-CU_SuiteInfo matrix_suite = {
-	.pName = "matrix",
+CU_SuiteInfo li3ds_matrix_suite = {
+	.pName = "li3ds_matrix",
 	.pInitFunc = init_suite,
 	.pCleanupFunc = clean_suite,
-	.pTests = matrix_tests
+	.pTests = li3ds_matrix_tests
 };

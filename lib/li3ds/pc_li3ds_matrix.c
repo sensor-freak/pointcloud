@@ -10,7 +10,8 @@
 *
 ***********************************************************************/
 
-#include "pc_api_internal.h"
+#include "pc_li3ds_api_internal.h"
+#include "../pc_api_internal.h"
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
