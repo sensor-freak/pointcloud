@@ -469,7 +469,7 @@ pc_point_rotate_quaternion(
 	if ( zdim )
 		pc_point_get_double(point, zdim, &vec[2]);
 
-	pc_matrix_33_multiply_vector(rvec, qmat, vec);
+	pc_matrix_33_multiply_vector_3(rvec, qmat, vec);
 
 	pc_point_set_double(point, xdim, rvec[0]);
 	pc_point_set_double(point, ydim, rvec[1]);

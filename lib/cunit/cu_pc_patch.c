@@ -850,6 +850,7 @@ test_patch_set_schema_compression_none()
 	pc_pointlist_free(pl);
 }
 
+#ifdef HAVE_LAZPERF
 static void
 test_patch_range_compression_lazperf()
 {
@@ -884,7 +885,9 @@ test_patch_range_compression_lazperf()
 	pc_patch_free(pa);
 	pc_pointlist_free(pl);
 }
+#endif 	/* HAVE_LAZPERF */
 
+#ifdef HAVE_LAZPERF
 static void
 test_patch_set_schema_compression_lazperf()
 {
@@ -925,6 +928,7 @@ test_patch_set_schema_compression_lazperf()
 	pc_patch_free((PCPATCH*) pal);
 	pc_pointlist_free(pl);
 }
+#endif	/* HAVE_LAZPERF */
 
 static void
 test_patch_range_compression_dimensional(enum DIMCOMPRESSIONS dimcomp)
@@ -976,6 +980,7 @@ test_patch_range_compression_dimensional(enum DIMCOMPRESSIONS dimcomp)
 	pc_pointlist_free(pl);
 }
 
+#ifdef HAVE_LIBGHT
 static void
 test_patch_set_schema_compression_ght()
 {
@@ -1001,7 +1006,6 @@ test_patch_set_schema_compression_ght()
 		pc_pointlist_add_point(pl, pt);
 	}
 
-#ifdef HAVE_LIBGHT
 	pag = pc_patch_ght_from_pointlist(pl);
 
 	// assign a valid schema to the patch
@@ -1025,10 +1029,9 @@ test_patch_set_schema_compression_ght()
 	pcfree(str);
 
 	pc_patch_free((PCPATCH*) pag);
-#endif
-
 	pc_pointlist_free(pl);
 }
+#endif
 
 static void
 test_patch_set_schema_dimensional_compression(enum DIMCOMPRESSIONS dimcomp)
@@ -1891,7 +1894,9 @@ CU_TestInfo patch_tests[] = {
 	PC_TEST(test_patch_range_compression_lazperf),
 #endif
 	PC_TEST(test_patch_set_schema_compression_none),
+#ifdef HAVE_LIBGHT
 	PC_TEST(test_patch_set_schema_compression_ght),
+#endif
 	PC_TEST(test_patch_set_schema_dimensional_compression_none),
 	PC_TEST(test_patch_set_schema_dimensional_compression_zlib),
 	PC_TEST(test_patch_set_schema_dimensional_compression_sigbits),
