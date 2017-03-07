@@ -149,7 +149,7 @@ pc_matrix_33_set_from_quaternion(PCMAT33 mat,
 * Multiply mat by vec and store the resuting vector in res.
 */
 void
-pc_matrix_33_multiply_vector(PCVEC3 res, const PCMAT33 mat, const PCVEC3 vec)
+pc_matrix_33_multiply_vector_3(PCVEC3 res, const PCMAT33 mat, const PCVEC3 vec)
 {
 	res[0] = mat[0] * vec[0] + mat[1] * vec[1] + mat[2] * vec[2];
 	res[1] = mat[3] * vec[0] + mat[4] * vec[1] + mat[5] * vec[2];
@@ -639,7 +639,7 @@ pc_box_transform_distorsion(PCBOX3 res, const PCDISTORSION *d, const PCBOX3 b)
 	double c0 = d->c[0], c1 = d->c[1], c2 = d->c[2];
 	// roots (xp,xm) of P' = c0 + 2 c1 X + 3 c2 X^2
 	double delta = c1*c1-3*c0*c2;
-	double xp, xm, Pp, Pm;
+	double xp = 0, xm = 0, Pp = 0, Pm = 0;
 	if ( delta > 0 )
 	{
 		double sqrtdelta = sqrt(delta);
@@ -981,7 +981,7 @@ pc_frustum_intersects(const PCFRUSTUM *f1, const PCFRUSTUM *f2, uint8_t mode)
 
 		for( i = 0; i < 12; ++i )
 		{
-			int j0, j1, j2;
+			int j0, j1; //, j2;
 			// 12 edges of the transformed frustum (defined by the 6 *plane*s)
 			double *n0 = plane[i0[i]];
 			double *n1 = plane[i1[i]];
