@@ -3,6 +3,7 @@ all install uninstall noop clean distclean:
 	$(MAKE) -C lib $@
 	$(MAKE) -C pgsql $@
 	$(MAKE) -C pgsql_postgis $@
+	$(MAKE) -C pgsql_li3ds $@
 
 check:
 	$(MAKE) -C lib $@
