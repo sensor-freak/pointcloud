@@ -530,9 +530,10 @@ pc_patch_dimensional_serialize(const PCPATCH *patch_in)
 {
 	//  uint32_t size;
 	//  uint32_t pcid;
-	//  uint32_t compression;
+	//  uint16_t version;
+	//  uint16_t compression;
 	//  uint32_t npoints;
-	//  double xmin, xmax, ymin, ymax;
+	//  double xmin, xmax, ymin, ymax, zmin, zmax, mmin, mmax;
 	//  data:
 	//    pcpoint[3] stats;
 	//    serialized_pcbytes[ndims] dimensions;
@@ -550,6 +551,7 @@ pc_patch_dimensional_serialize(const PCPATCH *patch_in)
 	serpch->pcid = patch->schema->pcid;
 	serpch->npoints = patch->npoints;
 	serpch->bounds = patch->bounds;
+	serpch->version = POINTCLOUD_DATA_VERSION;
 	serpch->compression = patch->type;
 
 	/* Get a pointer to the data area */
@@ -584,7 +586,8 @@ pc_patch_ght_serialize(const PCPATCH *patch_in)
 {
 	//  uint32_t size;
 	//  uint32_t pcid;
-	//  uint32_t compression;
+	//  unit16_t version;
+	//  uint16_t compression;
 	//  uint32_t npoints;
 	//  double xmin, xmax, ymin, ymax;
 	//  data:
@@ -605,6 +608,7 @@ pc_patch_ght_serialize(const PCPATCH *patch_in)
 	serpch->pcid = patch->schema->pcid;
 	serpch->npoints = patch->npoints;
 	serpch->bounds = patch->bounds;
+	serpch->version = POINTCLOUD_DATA_VERSION;
 	serpch->compression = patch->type;
 
 	/* Write stats into the buffer first */
@@ -643,6 +647,7 @@ pc_patch_lazperf_serialize(const PCPATCH *patch_in)
 	serpch->pcid = patch->schema->pcid;
 	serpch->npoints = patch->npoints;
 	serpch->bounds = patch->bounds;
+	serpch->version = POINTCLOUD_DATA_VERSION;
 	serpch->compression = patch->type;
 
 	/* Write stats into the buffer first */
@@ -671,9 +676,10 @@ pc_patch_uncompressed_serialize(const PCPATCH *patch_in)
 {
 	//  uint32_t size;
 	//  uint32_t pcid;
-	//  uint32_t compression;
+	//  uint16_t version;
+	//  uint16_t compression;
 	//  uint32_t npoints;
-	//  double xmin, xmax, ymin, ymax;
+	//  double xmin, xmax, ymin, ymax, zmin, zmax, mmin, mmax;
 	//  data:
 	//    pcpoint [];
 
@@ -686,6 +692,7 @@ pc_patch_uncompressed_serialize(const PCPATCH *patch_in)
 	serpch = pcalloc(serpch_size);
 
 	/* Copy basic */
+	serpch->version = POINTCLOUD_DATA_VERSION;
 	serpch->compression = patch->type;
 	serpch->pcid = patch->schema->pcid;
 	serpch->npoints = patch->npoints;
@@ -799,6 +806,32 @@ pc_patch_serialize_to_uncompressed(const PCPATCH *patch_in)
 	return serpatch;
 }
 
+static void
+pc_patch_set_common(PCPATCH *patch, const SERIALIZED_PATCH *serpatch, const PCSCHEMA *schema)
+{
+	uint32_t compression_and_version;
+
+	patch->readonly = true;
+	patch->schema = schema;
+	patch->npoints = serpatch->npoints;
+
+	compression_and_version = *((uint32_t *) (&serpatch->compression));
+	if ( compression_and_version > UINT16_MAX)
+	{
+		// new-style header, with 4D bounds
+		// (xmin, xmax, ymin, ymax, zmin, zmax, mmin, mmax)
+		patch->type = serpatch->compression;
+		patch->bounds = serpatch->bounds;
+	}
+	else
+	{
+		// old-style header, with 2D bounds
+		// (xmin, xmax, ymin, ymax)
+		patch->type = (uint16_t) compression_and_version;
+		memcpy(&patch->bounds, &serpatch->bounds, 4 * sizeof(double));
+	}
+}
+
 static PCPATCH *
 pc_patch_uncompressed_deserialize(const SERIALIZED_PATCH *serpatch, const PCSCHEMA *schema)
 {
@@ -806,9 +839,10 @@ pc_patch_uncompressed_deserialize(const SERIALIZED_PATCH *serpatch, const PCSCHE
 	// {
 	//  uint32_t size;
 	//  uint32_t pcid;
-	//  uint32_t compression;
+	//  uint16_t version;
+	//  uint16_t compression;
 	//  uint32_t npoints;
-	//  double xmin, xmax, ymin, ymax;
+	//  double xmin, xmax, ymin, ymax, zmin, zmax, mmin, mmax;
 	//  data:
 	//    pcpoint[3] pcstats(min, max, avg)
 	//    pcpoint[npoints]
@@ -820,12 +854,8 @@ pc_patch_uncompressed_deserialize(const SERIALIZED_PATCH *serpatch, const PCSCHE
 	PCPATCH_UNCOMPRESSED *patch = pcalloc(sizeof(PCPATCH_UNCOMPRESSED));
 
 	/* Set up basic info */
-	patch->type = serpatch->compression;
-	patch->schema = schema;
-	patch->readonly = true;
-	patch->npoints = serpatch->npoints;
+	pc_patch_set_common((PCPATCH *)patch, serpatch, schema);
 	patch->maxpoints = 0;
-	patch->bounds = serpatch->bounds;
 
 	buf = (uint8_t*)serpatch->data;
 
@@ -850,9 +880,10 @@ pc_patch_dimensional_deserialize(const SERIALIZED_PATCH *serpatch, const PCSCHEM
 	// {
 	//  uint32_t size;
 	//  uint32_t pcid;
-	//  uint32_t compression;
+	//  uint16_t version;
+	//  uint16_t compression;
 	//  uint32_t npoints;
-	//  double xmin, xmax, ymin, ymax;
+	//  double xmin, xmax, ymin, ymax, zmin, zmax, mmin, mmax;
 	//  data:
 	//    pcpoint[3] pcstats(min, max, avg)
 	//    pcbytes[ndims];
@@ -870,11 +901,7 @@ pc_patch_dimensional_deserialize(const SERIALIZED_PATCH *serpatch, const PCSCHEM
 	patch = pcalloc(sizeof(PCPATCH_DIMENSIONAL));
 
 	/* Set up basic info */
-	patch->type = serpatch->compression;
-	patch->schema = schema;
-	patch->readonly = true;
-	patch->npoints = npoints;
-	patch->bounds = serpatch->bounds;
+	pc_patch_set_common((PCPATCH *)patch, serpatch, schema);
 
 	/* Point into the stats area */
 	patch->stats = pc_patch_stats_deserialize(schema, serpatch->data);
@@ -907,9 +934,10 @@ pc_patch_ght_deserialize(const SERIALIZED_PATCH *serpatch, const PCSCHEMA *schem
 	// {
 	//  uint32_t size;
 	//  uint32_t pcid;
-	//  uint32_t compression;
+	//  uint16_t version;
+	//  uint16_t compression;
 	//  uint32_t npoints;
-	//  double xmin, xmax, ymin, ymax;
+	//  double xmin, xmax, ymin, ymax, zmin, zmax, mmin, mmax;
 	//  data:
 	//    pcpoint[3] pcstats(min, max, avg)
 	//    uint32_t ghtsize;
@@ -919,7 +947,6 @@ pc_patch_ght_deserialize(const SERIALIZED_PATCH *serpatch, const PCSCHEMA *schem
 
 	PCPATCH_GHT *patch;
 	uint32_t ghtsize;
-	int npoints = serpatch->npoints;
 	size_t stats_size = pc_stats_size(schema); // 3 pcpoints worth of stats
 	uint8_t *buf = (uint8_t*)serpatch->data + stats_size;
 
@@ -927,11 +954,7 @@ pc_patch_ght_deserialize(const SERIALIZED_PATCH *serpatch, const PCSCHEMA *schem
 	patch = pcalloc(sizeof(PCPATCH_GHT));
 
 	/* Set up basic info */
-	patch->type = serpatch->compression;
-	patch->schema = schema;
-	patch->readonly = true;
-	patch->npoints = npoints;
-	patch->bounds = serpatch->bounds;
+	pc_patch_set_common((PCPATCH *)patch, serpatch, schema);
 
 	/* Point into the stats area */
 	patch->stats = pc_patch_stats_deserialize(schema, serpatch->data);
@@ -950,7 +973,6 @@ pc_patch_lazperf_deserialize(const SERIALIZED_PATCH *serpatch, const PCSCHEMA *s
 {
 	PCPATCH_LAZPERF *patch;
 	uint32_t lazperfsize;
-	int npoints = serpatch->npoints;
 	size_t stats_size = pc_stats_size(schema);
 	uint8_t *buf = (uint8_t*)serpatch->data + stats_size;
 
@@ -958,11 +980,7 @@ pc_patch_lazperf_deserialize(const SERIALIZED_PATCH *serpatch, const PCSCHEMA *s
 	patch = pcalloc(sizeof(PCPATCH_LAZPERF));
 
 	/* Set up basic info */
-	patch->type = serpatch->compression;
-	patch->schema = schema;
-	patch->readonly = true;
-	patch->npoints = npoints;
-	patch->bounds = serpatch->bounds;
+	pc_patch_set_common((PCPATCH *)patch, serpatch, schema);
 
 	/* Point into the stats area */
 	patch->stats = pc_patch_stats_deserialize(schema, serpatch->data);
