@@ -24,6 +24,11 @@
 #define POINTCLOUD_FORMATS_XML "schema"
 #define POINTCLOUD_FORMATS_SRID "srid"
 
+// old-style patch headers do not include a data version and use 2D bounds
+// (xmin, xmax, ymin, ymax), while new-style patch headers include a data
+// version and use 4D bounds (xmin, xmax, ymin, ymax, zmin, zmax, mmin, mmax).
+#define POINTCLOUD_DATA_VERSION 1
+
 #define PG_GETARG_SERPOINT_P(argnum) (SERIALIZED_POINT*)PG_DETOAST_DATUM(PG_GETARG_DATUM(argnum))
 #define PG_GETARG_SERPATCH_P(argnum) (SERIALIZED_PATCH*)PG_DETOAST_DATUM(PG_GETARG_DATUM(argnum))
 
@@ -66,7 +71,8 @@ typedef struct
 {
 	uint32_t size;
 	uint32_t pcid;
-	uint32_t compression;
+	uint16_t compression;
+	uint16_t version;
 	uint32_t npoints;
 	PCBOUNDS bounds;
 	uint8_t data[1];
