@@ -174,12 +174,12 @@ PCSTATS;
 */
 
 #define PCPATCH_COMMON \
-	uint16_t type; \
 	int8_t readonly; \
-	const PCSCHEMA *schema; \
+	uint16_t type; \
 	uint32_t npoints;  \
-	PCBOUNDS bounds; \
-	PCSTATS *stats;
+	const PCSCHEMA *schema; \
+	PCSTATS *stats; \
+	PCBOUNDS bounds;
 
 typedef struct
 {
