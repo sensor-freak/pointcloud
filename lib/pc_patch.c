@@ -609,7 +609,8 @@ PCPOINT *pc_patch_pointn(const PCPATCH *patch, int n)
 
 /** set schema for patch */
 PCPATCH*
-pc_patch_set_schema(PCPATCH *patch, const PCSCHEMA *new_schema)
+pc_patch_set_schema(PCPATCH *patch, const PCSCHEMA *new_schema,
+					const PCPOINT *defaults)
 {
 	PCDIMENSION** new_dimensions = new_schema->dims;
 	PCDIMENSION* old_dimensions[new_schema->ndims];
@@ -627,12 +628,18 @@ pc_patch_set_schema(PCPATCH *patch, const PCSCHEMA *new_schema)
 		return patch;
 	}
 
+	if ( !defaults )
+	{
+		pcwarn("incompatible schemas, and no default values provided");
+		return NULL;
+	}
+
 	for ( j = 0; j < new_schema->ndims; j++ )
 	{
 		PCDIMENSION *ndim = new_dimensions[j];
 		old_dimensions[j] = pc_schema_get_dimension_by_name(
 				patch->schema, ndim->name);
-		default_values[j] = pc_value_scale_offset(0.0, ndim);
+		pc_point_get_double(defaults, ndim, &default_values[j]);
 	}
 
 	// init point lists
