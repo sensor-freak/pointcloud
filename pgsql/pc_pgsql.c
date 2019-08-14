@@ -233,6 +233,9 @@ pc_schema_from_pcid_uncached(uint32 pcid)
 	int err, srid;
 	size_t size;
 	PCSCHEMA *schema;
+	struct nameData pgpointcloud_schema;
+
+	get_pgpointcloud_schema(&pgpointcloud_schema);
 
 	if (SPI_OK_CONNECT != SPI_connect ())
 	{
@@ -241,8 +244,8 @@ pc_schema_from_pcid_uncached(uint32 pcid)
 		return NULL;
 	}
 
-	sprintf(sql, "select %s, %s from %s where pcid = %d",
-		POINTCLOUD_FORMATS_XML, POINTCLOUD_FORMATS_SRID, POINTCLOUD_FORMATS, pcid);
+	sprintf(sql, "select %s, %s from \"%s\".%s where pcid = %d",
+		POINTCLOUD_FORMATS_XML, POINTCLOUD_FORMATS_SRID, pgpointcloud_schema.data, POINTCLOUD_FORMATS, pcid);
 	err = SPI_exec(sql, 1);
 
 	if ( err < 0 )
@@ -1095,4 +1098,55 @@ pc_patch_to_geometry_wkb_envelope(const SERIALIZED_PATCH *pa, const PCSCHEMA *sc
 
 	if ( wkbsize ) *wkbsize = size;
 	return wkb;
+}
+
+void
+get_pgpointcloud_schema(struct nameData *nd)
+{
+	static char pgpointcloud_schema[NAMEDATALEN];
+	char *sql;
+	int err;
+	char *schema_spi;
+
+	if ( *pgpointcloud_schema )
+	{
+		strlcpy(nd->data, pgpointcloud_schema, NAMEDATALEN);
+		return;
+	}
+
+	if (SPI_OK_CONNECT != SPI_connect ())
+	{
+		SPI_finish();
+		elog(ERROR, "%s: could not connect to SPI manager", __func__);
+		strcpy(nd->data, "\0");
+		return;
+	}
+
+	sql ="SELECT extnamespace::regnamespace FROM pg_extension WHERE extname = 'pointcloud'";
+	err = SPI_exec(sql, 1);
+	if ( err < 0 )
+	{
+		SPI_finish();
+		elog(ERROR, "%s: error (%d) executing query: %s", __func__, err, sql);
+		strcpy(nd->data, "\0");
+		return;
+	}
+
+	/* pointclod extension not found in table pg_extension */
+	if (SPI_processed <= 0)
+	{
+		SPI_finish();
+		elog(ERROR, "no entry in pg_extension for pointcloud");
+		strcpy(nd->data, "\0");
+		return;
+	}
+	schema_spi = SPI_getvalue(SPI_tuptable->vals[0], SPI_tuptable->tupdesc, 1);
+
+	/* Copy result to static buffer */
+	strlcpy(pgpointcloud_schema, schema_spi, NAMEDATALEN);
+	strlcpy(nd->data, schema_spi, NAMEDATALEN);
+
+	SPI_finish();
+
+	return;
 }

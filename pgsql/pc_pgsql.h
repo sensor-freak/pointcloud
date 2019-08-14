@@ -120,3 +120,7 @@ uint8_t* pc_patch_to_geometry_wkb_envelope(const SERIALIZED_PATCH *pa, const PCS
 uint32 pcid_from_datum(Datum d);
 
 PCSTATS* pc_patch_stats_deserialize(const PCSCHEMA *schema, const uint8_t *buf);
+
+
+/** Find out in which schema pgpointcloud extension is installed */
+void get_pgpointcloud_schema(struct nameData *nd);
