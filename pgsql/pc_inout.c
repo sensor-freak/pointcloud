@@ -171,7 +171,7 @@ Datum pcschema_is_valid(PG_FUNCTION_ARGS)
 
 	if ( !schema )
 	{
-		PG_RETURN_BOOL(FALSE);
+		PG_RETURN_BOOL(false);
 	}
 
 	valid = pc_schema_is_valid(schema);
@@ -224,7 +224,7 @@ Datum pcpoint_from_double_array(PG_FUNCTION_ARGS)
 		elog(ERROR, "array dimensions do not match schema dimensions of pcid = %d", pcid);
 
 	vals = (float8*) ARR_DATA_PTR(arrptr);
-	pt = pc_point_from_double_array(schema, vals, nelems);
+	pt = pc_point_from_double_array(schema, vals, 0, nelems);
 
 	serpt = pc_point_serialize(pt);
 	pc_point_free(pt);

@@ -42,12 +42,6 @@ VALUES (1, 0, -- XYZI, scaled, uncompressed
   </pc:dimension>
   <pc:metadata>
     <Metadata name="compression">none</Metadata>
-    <Metadata name="ght_xmin"></Metadata>
-    <Metadata name="ght_ymin"></Metadata>
-    <Metadata name="ght_xmax"></Metadata>
-    <Metadata name="ght_ymax"></Metadata>
-    <Metadata name="ght_keylength"></Metadata>
-    <Metadata name="ght_depth"></Metadata>
     <Metadata name="spatialreference" type="id">4326</Metadata>
   </pc:metadata>
 </pc:PointCloudSchema>'
@@ -138,12 +132,6 @@ VALUES (1, 0, -- XYZI, scaled, uncompressed
   </pc:dimension>
   <pc:metadata>
     <Metadata name="compression">none</Metadata>
-    <Metadata name="ght_xmin"></Metadata>
-    <Metadata name="ght_ymin"></Metadata>
-    <Metadata name="ght_xmax"></Metadata>
-    <Metadata name="ght_ymax"></Metadata>
-    <Metadata name="ght_keylength"></Metadata>
-    <Metadata name="ght_depth"></Metadata>
     <Metadata name="spatialreference" type="id">4326</Metadata>
   </pc:metadata>
 </pc:PointCloudSchema>'
@@ -376,9 +364,7 @@ FROM p1, ( values
   ('dimensional','rle'),
   ('dimensional','zlib'),
   ('dimensional','sigbits'),
-  ('dimensional','auto'),
-  ('laz','null')
-  -- ,('ght',null) -- fails due to https://github.com/pgpointcloud/pointcloud/issues/35
+  ('dimensional','auto')
 ) dimcompr(compr,sc)
 ORDER BY compr,sc,v;
 
@@ -450,5 +436,10 @@ FROM ( SELECT PC_Patch(PC_MakePoint(1, ARRAY[-1,0,4862413,1])) p ) foo;
 SELECT
   PC_AsText(PC_Transform(p, 10, 1.0)) t, PC_Summary(PC_Transform(p, 10, 1.0))::json->'compr' c
 FROM ( SELECT PC_Patch(PC_MakePoint(1, ARRAY[-1,0,4862413,1])) p ) foo;
+
+
+-- test PC_Patch from float8 array
+SELECT pc_astext(PC_MakePatch(1, ARRAY[-1,0,5,1, -1,0,6,1, -1,0,7,1]));
+
 
 TRUNCATE pointcloud_formats;

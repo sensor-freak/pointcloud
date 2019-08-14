@@ -21,10 +21,6 @@
 #include "pc_config.h"
 #include "hashtable.h"
 
-#ifdef HAVE_LIBGHT
-#include "ght.h"
-#endif
-
 #ifndef __GNUC__
 #define __attribute__ (x)
 #endif
@@ -39,9 +35,8 @@
 enum COMPRESSIONS
 {
 	PC_NONE = 0,
-	PC_GHT = 1,
-	PC_DIMENSIONAL = 2,
-	PC_LAZPERF = 3
+	PC_DIMENSIONAL = 1,
+	PC_LAZPERF = 2
 };
 
 /**
@@ -199,13 +194,6 @@ typedef struct
 typedef struct
 {
 	PCPATCH_COMMON
-	size_t ghtsize;
-	uint8_t *ght;
-} PCPATCH_GHT;
-
-typedef struct
-{
-	PCPATCH_COMMON
 	size_t lazperfsize;
 	uint8_t *lazperf;
 } PCPATCH_LAZPERF;
@@ -253,11 +241,11 @@ void pc_install_default_handlers(void);
 */
 
 /** Convert binary to hex */
-uint8_t* bytes_from_hexbytes(const char *hexbuf, size_t hexsize);
+uint8_t* pc_bytes_from_hexbytes(const char *hexbuf, size_t hexsize);
 /** Convert hex to binary */
-char* hexbytes_from_bytes(const uint8_t *bytebuf, size_t bytesize);
+char* pc_hexbytes_from_bytes(const uint8_t *bytebuf, size_t bytesize);
 /** Read the the PCID from WKB form of a POINT/PATCH */
-uint32_t wkb_get_pcid(const uint8_t *wkb);
+uint32_t pc_wkb_get_pcid(const uint8_t *wkb);
 /** Build an empty #PCDIMSTATS based on the schema */
 PCDIMSTATS* pc_dimstats_make(const PCSCHEMA *schema);
 /** Get compression name from enum */
@@ -322,8 +310,8 @@ PCPOINT* pc_point_make(const PCSCHEMA *s);
 /** Create a new readonly PCPOINT on top of a data buffer */
 PCPOINT* pc_point_from_data(const PCSCHEMA *s, const uint8_t *data);
 
-/** Create a new read/write PCPOINT from a double array */
-PCPOINT* pc_point_from_double_array(const PCSCHEMA *s, double *array, uint32_t nelems);
+/** Create a new read/write PCPOINT from a double array  with an offset */
+PCPOINT* pc_point_from_double_array(const PCSCHEMA *s, double *array, uint32_t offset, uint32_t stride);
 
 /**
 * Return an allocated double array of doubles representing point values
