@@ -27,7 +27,7 @@ RUN apt-get install -y --no-install-recommends \
 
 # Build and install the pointcloud extension
 WORKDIR /pgext-build
-RUN git clone https://github.com/pgpointcloud/pointcloud \
+RUN git clone https://github.com/sensor-freak/pointcloud --branch docker \
     && cd pointcloud \
     && ./autogen.sh \
     && ./configure --with-pgconfig=/usr/lib/postgresql/${POSTGRES_VERSION}/bin/pg_config CFLAGS="-Wall -Werror -O2 -g" \
