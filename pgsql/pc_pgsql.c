@@ -244,7 +244,7 @@ pc_schema_from_pcid_uncached(uint32 pcid)
 		return NULL;
 	}
 
-	sprintf(sql, "select %s, %s from \"%s\".%s where pcid = %d",
+	sprintf(sql, "select %s, %s from %s.%s where pcid = %d",
 		POINTCLOUD_FORMATS_XML, POINTCLOUD_FORMATS_SRID, pgpointcloud_schema.data, POINTCLOUD_FORMATS, pcid);
 	err = SPI_exec(sql, 1);
 
