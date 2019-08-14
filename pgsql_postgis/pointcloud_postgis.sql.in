@@ -11,7 +11,7 @@ CREATE OR REPLACE FUNCTION PC_Intersection(pcpatch, geometry)
 			ipch AS (SELECT PC_Patch(pt) AS pch FROM ipts)
 		SELECT pch FROM ipch;
 	$$
-	LANGUAGE 'sql';
+	LANGUAGE 'sql' SET search_path FROM CURRENT;
 
 -----------------------------------------------------------------------------
 -- Cast from pcpatch to polygon
@@ -21,14 +21,16 @@ CREATE OR REPLACE FUNCTION PC_EnvelopeGeometry(pcpatch)
 	$$
 		SELECT ST_GeomFromEWKB(PC_EnvelopeAsBinary($1))
 	$$
-	LANGUAGE 'sql' IMMUTABLE STRICT;
+	LANGUAGE 'sql' SET search_path FROM CURRENT
+	IMMUTABLE STRICT;
 
 CREATE OR REPLACE FUNCTION geometry(pcpatch)
 	RETURNS geometry AS
 	$$
 		SELECT PC_EnvelopeGeometry($1)
 	$$
-	LANGUAGE 'sql' IMMUTABLE STRICT;
+	LANGUAGE 'sql' SET search_path FROM CURRENT
+	IMMUTABLE STRICT;
 
 CREATE CAST (pcpatch AS geometry) WITH FUNCTION PC_EnvelopeGeometry(pcpatch);
 
@@ -41,7 +43,7 @@ CREATE OR REPLACE FUNCTION geometry(pcpoint)
 	$$
 		SELECT ST_GeomFromEWKB(PC_AsBinary($1))
 	$$
-	LANGUAGE 'sql';
+	LANGUAGE 'sql' SET search_path FROM CURRENT;
 
 CREATE CAST (pcpoint AS geometry) WITH FUNCTION geometry(pcpoint);
 
@@ -61,7 +63,7 @@ CREATE OR REPLACE FUNCTION PC_Intersects(geometry, pcpatch)
 	$$
 		SELECT PC_Intersects($2, $1)
 	$$
-	LANGUAGE 'sql';
+	LANGUAGE 'sql' SET search_path FROM CURRENT;
 
 -----------------------------------------------------------------------------
 -- Function from pcpatch to LineString
@@ -71,11 +73,12 @@ CREATE OR REPLACE FUNCTION PC_BoundingDiagonalGeometry(pcpatch)
 	$$
 		SELECT ST_GeomFromEWKB(PC_BoundingDiagonalAsBinary($1))
 	$$
-	LANGUAGE 'sql';
+	LANGUAGE 'sql' SET search_path FROM CURRENT;
 
 -----------------------------------------------------------------------------
 -- Function returning the version number
 --
 CREATE OR REPLACE FUNCTION PC_PostGIS_Version()
 	RETURNS text AS $$ SELECT '@POINTCLOUD_VERSION@'::text $$
-	LANGUAGE 'sql' IMMUTABLE STRICT;
+	LANGUAGE 'sql' SET search_path FROM CURRENT
+	IMMUTABLE STRICT;
