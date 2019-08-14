@@ -21,14 +21,14 @@ CREATE OR REPLACE FUNCTION PC_EnvelopeGeometry(pcpatch)
 	$$
 		SELECT ST_GeomFromEWKB(PC_EnvelopeAsBinary($1))
 	$$
-	LANGUAGE 'sql';
+	LANGUAGE 'sql' IMMUTABLE STRICT;
 
 CREATE OR REPLACE FUNCTION geometry(pcpatch)
 	RETURNS geometry AS
 	$$
 		SELECT PC_EnvelopeGeometry($1)
 	$$
-	LANGUAGE 'sql';
+	LANGUAGE 'sql' IMMUTABLE STRICT;
 
 CREATE CAST (pcpatch AS geometry) WITH FUNCTION PC_EnvelopeGeometry(pcpatch);
 
